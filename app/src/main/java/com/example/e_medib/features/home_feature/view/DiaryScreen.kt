@@ -243,11 +243,10 @@ fun DiaryBox(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, color = mLightGrayScale),
+        border = BorderStroke(2.dp, color = mLightGrayScale),
         elevation = 0.dp
     ) {
         Column(
-
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween

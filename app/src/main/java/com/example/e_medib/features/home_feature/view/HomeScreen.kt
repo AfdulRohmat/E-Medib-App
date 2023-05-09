@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +19,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,12 +47,13 @@ fun HomeScreenComponent() {
     val today = LocalDate.now()
     val datePickerState =
         rememberDatePickerState(initialDate = LocalDate.now())
-    val listTabs = listOf(TabItem.Diary, TabItem.KondisiKesehatan)
+    val listTabs = listOf(TabItem.KondisiKesehatan, TabItem.Diary, )
     val pagerState = rememberPagerState(initialPage = 0)
 
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -231,16 +234,24 @@ fun HomeScreenComponent() {
         )
 
         // TAB MENU KONDISI KESEHATAN DAN DIARY
-        Tabs(tabs = listTabs, pagerState = pagerState)
-        TabContent(tabs = listTabs, pagerState = pagerState)
+        Column(
+            modifier = Modifier
+                .height(800.dp)
+        ) {
+            Tabs(tabs = listTabs, pagerState = pagerState)
+        }
 
 
     }
 }
 
+
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun Tabs(tabs: List<TabItem>, pagerState: PagerState) {
+fun Tabs(
+    tabs: List<TabItem>,
+    pagerState: PagerState
+) {
     val scope = rememberCoroutineScope()
 
     TabRow(
@@ -251,7 +262,7 @@ fun Tabs(tabs: List<TabItem>, pagerState: PagerState) {
         },
     ) {
         tabs.forEachIndexed { index, tabItem ->
-            LeadingIconTab(
+            Tab(
                 selected = pagerState.currentPage == index,
                 onClick = {
                     scope.launch { pagerState.animateScrollToPage(index) }
@@ -259,20 +270,15 @@ fun Tabs(tabs: List<TabItem>, pagerState: PagerState) {
                 selectedContentColor = mRedMain,
                 unselectedContentColor = mBlack,
                 enabled = true,
-                text = { Text(text = tabItem.title) }, icon = {})
+                text = { Text(text = tabItem.title) },
+            )
         }
 
     }
-}
 
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun TabContent(tabs: List<TabItem>, pagerState: PagerState) {
     HorizontalPager(count = tabs.size, state = pagerState) { page ->
         tabs[page].screen()
     }
-
 }
 
 

@@ -135,7 +135,7 @@ fun LoginScreenComponent(
             onClick = {
                 onDone(username.value.trim(), password.value.trim())
                 keyboardController?.hide()
-                navController.navigate(EMedibAppScreen.HomeScreen.name)
+                navController.navigate(EMedibAppScreen.PantauKaloriScreen.name)
             },
             modifier = Modifier
                 .fillMaxWidth()
