@@ -9,6 +9,7 @@ import com.example.e_medib.features.auth_feature.view.LoginScreen
 import com.example.e_medib.features.auth_feature.view.RegisterScreen
 import com.example.e_medib.features.home_feature.view.HomeScreen
 import com.example.e_medib.features.pantau_kalori_feature.view.PantauKaloriScreen
+import com.example.e_medib.features.pantau_kalori_feature.view.SearchMenuScreen
 import com.example.e_medib.features.profile_feature.view.ProfileScreen
 import com.example.e_medib.features.splash_screen_feature.view.SplashScreen
 
@@ -38,6 +39,9 @@ fun EMedibNavigation() {
 
         composable(EMedibAppScreen.AktivitasScreen.name) {
             AktivitasScreen(navController = navController)
+        }
+        composable(EMedibAppScreen.SearchMenuScreen.name) {
+            SearchMenuScreen(navController = navController)
         }
 
         composable(EMedibAppScreen.PantauKaloriScreen.name) {

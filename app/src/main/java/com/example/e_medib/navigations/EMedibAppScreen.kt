@@ -7,8 +7,10 @@ enum class EMedibAppScreen {
     RegisterScreen,
     AktivitasScreen,
     PantauKaloriScreen,
+    SearchMenuScreen,
     ProfileScreen,
-    MainScreen
+    MainScreen,
+
     ;
 
     companion object {
@@ -19,6 +21,7 @@ enum class EMedibAppScreen {
             RegisterScreen.name -> RegisterScreen
             AktivitasScreen.name -> AktivitasScreen
             PantauKaloriScreen.name -> PantauKaloriScreen
+            SearchMenuScreen.name -> SearchMenuScreen
             ProfileScreen.name -> ProfileScreen
             MainScreen.name -> MainScreen
             null -> HomeScreen

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_medib.R
 import com.example.e_medib.features.home_feature.view.HomeScreenComponent
+import com.example.e_medib.navigations.EMedibAppScreen
 import com.example.e_medib.ui.theme.*
 import com.foreverrafs.datepicker.DatePickerTimeline
 import com.foreverrafs.datepicker.state.rememberDatePickerState
@@ -38,12 +39,12 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantauKaloriScreen(navController: NavController) {
-    PantauKaloriScreenLayout();
+    PantauKaloriScreenLayout(navController);
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun PantauKaloriScreenLayout() {
+fun PantauKaloriScreenLayout(navController: NavController) {
     val datePickerState =
         rememberDatePickerState(initialDate = LocalDate.now())
 
@@ -137,7 +138,9 @@ fun PantauKaloriScreenLayout() {
                                     )
                                 }
                             }
-                            IconButton(modifier = Modifier.weight(1f), onClick = { }) {
+                            IconButton(modifier = Modifier.weight(1f), onClick = {
+                                navController.navigate(EMedibAppScreen.SearchMenuScreen.name)
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.AddCircle,
                                     contentDescription = "Add",
@@ -344,7 +347,8 @@ fun PantauKaloriScreenLayout() {
                                     )
                                 }
                             }
-                            IconButton(modifier = Modifier.weight(1f), onClick = { }) {
+                            IconButton(modifier = Modifier.weight(1f), onClick = {
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.AddCircle,
                                     contentDescription = "Add",
@@ -528,5 +532,5 @@ fun RowItem(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFF)
 @Composable
 fun PantauKaloriScreenPreview() {
-    PantauKaloriScreenLayout();
+//    PantauKaloriScreenLayout();
 }
