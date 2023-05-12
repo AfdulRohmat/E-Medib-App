@@ -5,6 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.e_medib.features.aktivitas_feature.view.AktivitasScreen
+import com.example.e_medib.features.aktivitas_feature.view.DetailAktivitasScreen
+import com.example.e_medib.features.aktivitas_feature.view.PilihAktivitasScreen
 import com.example.e_medib.features.auth_feature.view.LoginScreen
 import com.example.e_medib.features.auth_feature.view.RegisterScreen
 import com.example.e_medib.features.home_feature.view.HomeScreen
@@ -19,7 +21,6 @@ fun EMedibNavigation() {
 
     NavHost(navController = navController, startDestination = EMedibAppScreen.SplashScreen.name) {
         // DEFINE ALL POSSIBLE SCREEN THAT APP WILL HAVE
-
 
         composable(EMedibAppScreen.SplashScreen.name) {
             SplashScreen(navController = navController)
@@ -40,6 +41,16 @@ fun EMedibNavigation() {
         composable(EMedibAppScreen.AktivitasScreen.name) {
             AktivitasScreen(navController = navController)
         }
+
+        composable(EMedibAppScreen.PilihAktivitasScreen.name) {
+            PilihAktivitasScreen(navController = navController)
+        }
+
+        composable(EMedibAppScreen.DetailAktivitasScreen.name) {
+            DetailAktivitasScreen(navController = navController)
+        }
+
+
         composable(EMedibAppScreen.SearchMenuScreen.name) {
             SearchMenuScreen(navController = navController)
         }

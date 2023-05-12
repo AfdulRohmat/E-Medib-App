@@ -10,6 +10,8 @@ enum class EMedibAppScreen {
     SearchMenuScreen,
     ProfileScreen,
     MainScreen,
+    PilihAktivitasScreen,
+    DetailAktivitasScreen,
 
     ;
 
@@ -20,6 +22,8 @@ enum class EMedibAppScreen {
             LoginScreen.name -> LoginScreen
             RegisterScreen.name -> RegisterScreen
             AktivitasScreen.name -> AktivitasScreen
+            PilihAktivitasScreen.name -> PilihAktivitasScreen
+            DetailAktivitasScreen.name -> DetailAktivitasScreen
             PantauKaloriScreen.name -> PantauKaloriScreen
             SearchMenuScreen.name -> SearchMenuScreen
             ProfileScreen.name -> ProfileScreen

@@ -36,15 +36,9 @@ import com.foreverrafs.datepicker.DatePickerTimeline
 import com.foreverrafs.datepicker.state.rememberDatePickerState
 import java.time.LocalDate
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PantauKaloriScreen(navController: NavController) {
-    PantauKaloriScreenLayout(navController);
-}
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun PantauKaloriScreenLayout(navController: NavController) {
+fun PantauKaloriScreen(navController: NavController) {
     val datePickerState =
         rememberDatePickerState(initialDate = LocalDate.now())
 
@@ -84,11 +78,12 @@ fun PantauKaloriScreenLayout(navController: NavController) {
                 },
             )
 
+            // COLUMN LAYOUT
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
@@ -185,7 +180,6 @@ fun PantauKaloriScreenLayout(navController: NavController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Image(
-
                                 painter = painterResource(id = R.drawable.icon_siang),
                                 contentDescription = "app_logo",
                                 modifier = Modifier
@@ -485,6 +479,7 @@ fun PantauKaloriScreenLayout(navController: NavController) {
     }
 }
 
+
 @Composable
 fun RowItem(
     title: String,
@@ -532,5 +527,5 @@ fun RowItem(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFF)
 @Composable
 fun PantauKaloriScreenPreview() {
-//    PantauKaloriScreenLayout();
+// PantauKaloriScreen()
 }
