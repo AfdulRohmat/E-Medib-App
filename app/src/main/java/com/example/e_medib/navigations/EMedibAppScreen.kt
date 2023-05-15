@@ -9,6 +9,7 @@ enum class EMedibAppScreen {
     PantauKaloriScreen,
     SearchMenuScreen,
     ProfileScreen,
+    HitungBMIScreen,
     MainScreen,
     PilihAktivitasScreen,
     DetailAktivitasScreen,
@@ -27,6 +28,7 @@ enum class EMedibAppScreen {
             PantauKaloriScreen.name -> PantauKaloriScreen
             SearchMenuScreen.name -> SearchMenuScreen
             ProfileScreen.name -> ProfileScreen
+            HitungBMIScreen.name -> HitungBMIScreen
             MainScreen.name -> MainScreen
             null -> HomeScreen
             else -> throw java.lang.IllegalArgumentException("Route $route is not defined")

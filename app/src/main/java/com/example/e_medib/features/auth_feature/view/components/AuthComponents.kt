@@ -18,16 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.e_medib.ui.theme.mGrayScale
 import com.example.e_medib.ui.theme.mLightGrayScale
-import com.example.e_medib.ui.theme.mWhite
 
 @Composable
-fun CustomInputField(
+fun CustomLoginInputField(
     modifier: Modifier = Modifier,
     valueState: MutableState<String>,
     label: String,

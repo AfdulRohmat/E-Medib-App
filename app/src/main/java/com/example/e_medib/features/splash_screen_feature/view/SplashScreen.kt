@@ -25,9 +25,9 @@ fun SplashScreen(navController: NavController) {
 
     // DELAY FOR SEVERAL TIME THEN GO TO NEXT PAGE
     LaunchedEffect(key1 = true, block = {
-        delay(1000L)
-        navController.navigate(EMedibAppScreen.AktivitasScreen.name) {
-            popUpTo(EMedibAppScreen.AktivitasScreen.name) {
+        delay(500L)
+        navController.navigate(EMedibAppScreen.HitungBMIScreen.name) {
+            popUpTo(EMedibAppScreen.HitungBMIScreen.name) {
                 inclusive = true
             }
         }

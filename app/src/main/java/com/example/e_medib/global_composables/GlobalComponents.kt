@@ -8,18 +8,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.e_medib.ui.theme.mGrayScale
 import com.example.e_medib.ui.theme.mLightGrayScale
 import com.example.e_medib.ui.theme.mRedMain
 
@@ -84,4 +90,40 @@ fun CustomExpandedCard(
 
 
     }
+}
+
+@Composable
+fun CustomInputField(
+    modifier: Modifier = Modifier,
+    valueState: MutableState<String>,
+    placeholder: String,
+    isEnable: Boolean = true,
+    isSingleLine: Boolean = true,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Next,
+    onAction: KeyboardActions = KeyboardActions.Default,
+    trailingIcon: @Composable() (() -> Unit)?,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+) {
+    OutlinedTextField(
+        value = valueState.value, onValueChange = { valueState.value = it },
+        placeholder = { Text(text = placeholder) },
+        singleLine = isSingleLine,
+        textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colors.onBackground),
+        enabled = isEnable,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+        keyboardActions = onAction,
+        shape = RoundedCornerShape(10.dp),
+        visualTransformation = visualTransformation,
+        trailingIcon = trailingIcon,
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = mLightGrayScale,
+            unfocusedBorderColor = mLightGrayScale,
+            focusedLabelColor = Color.Black,
+            unfocusedLabelColor = Color.Black,
+            placeholderColor = mGrayScale
+        ),
+        modifier = modifier
+            .fillMaxWidth(),
+    )
 }

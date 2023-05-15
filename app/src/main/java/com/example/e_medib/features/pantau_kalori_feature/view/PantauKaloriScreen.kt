@@ -29,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_medib.R
-import com.example.e_medib.features.home_feature.view.HomeScreenComponent
 import com.example.e_medib.navigations.EMedibAppScreen
 import com.example.e_medib.ui.theme.*
 import com.foreverrafs.datepicker.DatePickerTimeline

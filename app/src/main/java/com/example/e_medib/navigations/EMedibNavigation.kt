@@ -12,6 +12,7 @@ import com.example.e_medib.features.auth_feature.view.RegisterScreen
 import com.example.e_medib.features.home_feature.view.HomeScreen
 import com.example.e_medib.features.pantau_kalori_feature.view.PantauKaloriScreen
 import com.example.e_medib.features.pantau_kalori_feature.view.SearchMenuScreen
+import com.example.e_medib.features.profile_feature.view.HitungBMIdanBMRScreen
 import com.example.e_medib.features.profile_feature.view.ProfileScreen
 import com.example.e_medib.features.splash_screen_feature.view.SplashScreen
 
@@ -61,6 +62,10 @@ fun EMedibNavigation() {
 
         composable(EMedibAppScreen.ProfileScreen.name) {
             ProfileScreen(navController = navController)
+        }
+
+        composable(EMedibAppScreen.HitungBMIScreen.name) {
+            HitungBMIdanBMRScreen(navController = navController)
         }
 
     }
