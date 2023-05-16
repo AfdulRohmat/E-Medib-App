@@ -2,7 +2,6 @@ package com.example.e_medib.features.aktivitas_feature.view
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -18,13 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.e_medib.navigations.EMedibAppScreen
+import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
 import com.foreverrafs.datepicker.DatePickerTimeline
 import com.foreverrafs.datepicker.state.rememberDatePickerState
@@ -110,7 +108,7 @@ fun AktivitasScreen(navController: NavController) {
                     // Button Pilih Aktivitas Lain
                     OutlinedButton(
                         onClick = {
-                            navController.navigate(EMedibAppScreen.PilihAktivitasScreen.name)
+                            navController.navigate(AppScreen.PilihAktivitasScreen.screen_route)
                         },
                         modifier = Modifier
                             .weight(1f)

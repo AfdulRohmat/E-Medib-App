@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_medib.R
-import com.example.e_medib.navigations.EMedibAppScreen
+import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.mWhite
 import kotlinx.coroutines.delay
 
@@ -26,8 +26,8 @@ fun SplashScreen(navController: NavController) {
     // DELAY FOR SEVERAL TIME THEN GO TO NEXT PAGE
     LaunchedEffect(key1 = true, block = {
         delay(500L)
-        navController.navigate(EMedibAppScreen.HitungBMIScreen.name) {
-            popUpTo(EMedibAppScreen.HitungBMIScreen.name) {
+        navController.navigate(AppScreen.Beranda.screen_route) {
+            popUpTo(AppScreen.Beranda.screen_route) {
                 inclusive = true
             }
         }

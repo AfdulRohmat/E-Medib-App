@@ -4,18 +4,19 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.e_medib.ui.theme.mLightGrayScale
+import com.example.e_medib.ui.theme.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -38,6 +39,43 @@ fun CustomProfileCard(
         ) {
             header()
             body()
+        }
+
+    }
+
+
+}
+
+@Composable
+fun CustomProfileListTile(modifier: Modifier = Modifier, data: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+            .fillMaxWidth()
+            .border(
+                BorderStroke(1.dp, mLightGrayScale),
+                RoundedCornerShape(50)
+            )
+            .padding(horizontal = 18.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = data,
+
+            style = MaterialTheme.typography.body1,
+            textAlign = TextAlign.Start,
+            fontWeight = FontWeight.SemiBold,
+            color = mBlack
+        )
+
+        IconButton(onClick = onClick) {
+            Icon(
+                imageVector = Icons.Outlined.FileDownload,
+                contentDescription = "Download",
+                tint = mRedMain,
+            )
+
         }
 
     }

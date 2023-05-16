@@ -36,20 +36,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.e_medib.ui.theme.*
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchMenuScreen(navController: NavController) {
-    SearchMenuScreenLayout(navController = navController)
-}
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
-@Composable
-fun SearchMenuScreenLayout(navController: NavController) {
     val search = rememberSaveable() { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val valid = remember(search.value) {
         search.value.trim().isNotEmpty()
     }
-
 
     Scaffold(
         topBar = {
@@ -153,6 +147,7 @@ fun SearchMenuScreenLayout(navController: NavController) {
     }
 }
 
+
 @Composable
 fun CustomListTile(modifier: Modifier = Modifier) {
     val checked = remember {
@@ -229,5 +224,5 @@ fun CustomListTile(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, backgroundColor = 0xFFFFFF)
 @Composable
 fun SearchMenuScreenPreview() {
-//    SearchMenuScreenLayout();
+
 }

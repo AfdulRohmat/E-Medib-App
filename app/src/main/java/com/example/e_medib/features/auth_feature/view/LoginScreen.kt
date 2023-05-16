@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_medib.R
 import com.example.e_medib.features.auth_feature.view.components.CustomLoginInputField
-import com.example.e_medib.navigations.EMedibAppScreen
+import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
 
 @Composable
@@ -131,7 +131,7 @@ fun LoginScreenComponent(
             onClick = {
                 onDone(username.value.trim(), password.value.trim())
                 keyboardController?.hide()
-                navController.navigate(EMedibAppScreen.PantauKaloriScreen.name)
+                navController.navigate(AppScreen.PantauKalori.screen_route)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,7 +167,7 @@ fun LoginScreenComponent(
                 color = mBlack
             )
             TextButton(onClick = {
-                navController.navigate(EMedibAppScreen.RegisterScreen.name)
+                navController.navigate(AppScreen.RegisterScreen.screen_route)
             }) {
                 Text(
                     text = "Daftar",

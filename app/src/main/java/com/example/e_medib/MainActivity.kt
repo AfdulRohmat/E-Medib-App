@@ -15,7 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import com.example.e_medib.navigations.EMedibNavigation
+import androidx.navigation.compose.rememberNavController
+import com.example.e_medib.navigations.NavigationGraph
 import com.example.e_medib.ui.theme.EMedibTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             EMedibTheme {
-                EMedibApp()
+                MainScreenView()
             }
         }
 
@@ -39,15 +40,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
-fun EMedibApp() {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.background
+fun MainScreenView() {
+    val navController = rememberNavController()
+    Scaffold(
+        bottomBar = { AppBottomNavigation(navController = navController) }
     ) {
-        Column() {
-            EMedibNavigation()
-        }
+
+        NavigationGraph(navController = navController)
     }
 }
 

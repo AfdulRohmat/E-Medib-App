@@ -1,9 +1,9 @@
 package com.example.e_medib.navigations
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.e_medib.features.aktivitas_feature.view.AktivitasScreen
 import com.example.e_medib.features.aktivitas_feature.view.DetailAktivitasScreen
 import com.example.e_medib.features.aktivitas_feature.view.PilihAktivitasScreen
@@ -12,61 +12,67 @@ import com.example.e_medib.features.auth_feature.view.RegisterScreen
 import com.example.e_medib.features.home_feature.view.HomeScreen
 import com.example.e_medib.features.pantau_kalori_feature.view.PantauKaloriScreen
 import com.example.e_medib.features.pantau_kalori_feature.view.SearchMenuScreen
+import com.example.e_medib.features.profile_feature.view.DowwnloadRekapScreen
 import com.example.e_medib.features.profile_feature.view.HitungBMIdanBMRScreen
 import com.example.e_medib.features.profile_feature.view.ProfileScreen
 import com.example.e_medib.features.splash_screen_feature.view.SplashScreen
 
 @Composable
-fun EMedibNavigation() {
-    val navController = rememberNavController()
+fun NavigationGraph(navController: NavHostController) {
 
-    NavHost(navController = navController, startDestination = EMedibAppScreen.SplashScreen.name) {
+
+    NavHost(navController = navController, startDestination = AppScreen.SplashScreen.screen_route) {
         // DEFINE ALL POSSIBLE SCREEN THAT APP WILL HAVE
 
-        composable(EMedibAppScreen.SplashScreen.name) {
+        composable(AppScreen.SplashScreen.screen_route) {
             SplashScreen(navController = navController)
         }
 
-        composable(EMedibAppScreen.HomeScreen.name) {
+        composable(AppScreen.Beranda.screen_route) {
             HomeScreen(navController = navController)
         }
 
-        composable(EMedibAppScreen.LoginScreen.name) {
+        composable(AppScreen.LoginScreen.screen_route) {
             LoginScreen(navController = navController)
         }
 
-        composable(EMedibAppScreen.RegisterScreen.name) {
+        composable(AppScreen.RegisterScreen.screen_route) {
             RegisterScreen(navController = navController)
         }
 
-        composable(EMedibAppScreen.AktivitasScreen.name) {
+        composable(AppScreen.Aktivitas.screen_route) {
             AktivitasScreen(navController = navController)
         }
 
-        composable(EMedibAppScreen.PilihAktivitasScreen.name) {
+        composable(AppScreen.PilihAktivitasScreen.screen_route) {
             PilihAktivitasScreen(navController = navController)
         }
 
-        composable(EMedibAppScreen.DetailAktivitasScreen.name) {
+        composable(AppScreen.DetailAktivitasScreen.screen_route) {
             DetailAktivitasScreen(navController = navController)
         }
 
 
-        composable(EMedibAppScreen.SearchMenuScreen.name) {
+        composable(AppScreen.SearchMenuScreen.screen_route) {
             SearchMenuScreen(navController = navController)
         }
 
-        composable(EMedibAppScreen.PantauKaloriScreen.name) {
+        composable(AppScreen.PantauKalori.screen_route) {
             PantauKaloriScreen(navController = navController)
         }
 
-        composable(EMedibAppScreen.ProfileScreen.name) {
+        composable(AppScreen.Profil.screen_route) {
             ProfileScreen(navController = navController)
         }
 
-        composable(EMedibAppScreen.HitungBMIScreen.name) {
+        composable(AppScreen.HitungBMIScreen.screen_route) {
             HitungBMIdanBMRScreen(navController = navController)
         }
+
+        composable(AppScreen.DowwnloadRekapScreen.screen_route) {
+            DowwnloadRekapScreen(navController = navController)
+        }
+
 
     }
 }

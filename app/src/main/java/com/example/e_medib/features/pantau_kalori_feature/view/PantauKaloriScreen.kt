@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.e_medib.R
-import com.example.e_medib.navigations.EMedibAppScreen
+import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
 import com.foreverrafs.datepicker.DatePickerTimeline
 import com.foreverrafs.datepicker.state.rememberDatePickerState
@@ -133,7 +131,7 @@ fun PantauKaloriScreen(navController: NavController) {
                                 }
                             }
                             IconButton(modifier = Modifier.weight(1f), onClick = {
-                                navController.navigate(EMedibAppScreen.SearchMenuScreen.name)
+                                navController.navigate(AppScreen.SearchMenuScreen.screen_route)
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.AddCircle,
