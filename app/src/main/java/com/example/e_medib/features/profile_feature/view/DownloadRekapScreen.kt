@@ -57,7 +57,7 @@ fun DowwnloadRekapScreen(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        //  navController.popBackStack()
+                          navController.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,

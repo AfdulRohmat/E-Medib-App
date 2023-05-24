@@ -83,7 +83,6 @@ fun KondisiKesehatanScreen() {
 
                         },
                         modifier = Modifier
-                            .height(50.dp)
                             .fillMaxWidth()
                             .weight(3f),
                         colors = ButtonDefaults.buttonColors(
@@ -96,6 +95,7 @@ fun KondisiKesehatanScreen() {
                     ) {
                         Text(
                             text = "Tambah",
+                            modifier = Modifier.padding(4.dp),
                             style = MaterialTheme.typography.caption,
                             fontWeight = FontWeight.SemiBold,
                             color = mWhite

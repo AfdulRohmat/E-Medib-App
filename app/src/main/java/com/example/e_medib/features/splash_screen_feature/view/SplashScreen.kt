@@ -26,8 +26,11 @@ fun SplashScreen(navController: NavController) {
     // DELAY FOR SEVERAL TIME THEN GO TO NEXT PAGE
     LaunchedEffect(key1 = true, block = {
         delay(500L)
-        navController.navigate(AppScreen.Beranda.screen_route) {
-            popUpTo(AppScreen.Beranda.screen_route) {
+        navController.navigate(AppScreen.LoginScreen.screen_route) {
+//            popUpTo(AppScreen.Beranda.screen_route) {
+//                inclusive = true
+//            }
+            popUpTo(AppScreen.LoginScreen.screen_route) {
                 inclusive = true
             }
         }

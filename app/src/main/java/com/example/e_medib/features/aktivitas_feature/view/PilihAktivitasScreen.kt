@@ -43,7 +43,7 @@ fun PilihAktivitasScreen(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                         navController.popBackStack()
+                        navController.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
@@ -89,8 +89,6 @@ fun PilihAktivitasScreen(navController: NavController) {
 
     }
 }
-
-
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -142,24 +140,14 @@ fun CustomPilihAktivitasCard(
                     fontWeight = FontWeight.Bold,
                     color = mBlack
                 )
-                Row(
+                Text(
+                    text = caption,
                     modifier = Modifier.padding(top = 4.dp),
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Text(
-                        text = caption,
-                        style = MaterialTheme.typography.caption,
-                        fontWeight = FontWeight.Normal,
-                        color = mGrayScale
-                    )
-                    Text(
-                        text = "Cal",
-                        modifier = Modifier.padding(start = 4.dp),
-                        style = MaterialTheme.typography.caption,
-                        fontWeight = FontWeight.SemiBold,
-                        color = mGrayScale
-                    )
-                }
+                    style = MaterialTheme.typography.caption,
+                    fontWeight = FontWeight.Normal,
+                    color = mGrayScale
+                )
+
             }
             Icon(
                 imageVector = Icons.Default.ChevronRight,

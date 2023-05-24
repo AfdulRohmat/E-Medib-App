@@ -53,7 +53,7 @@ fun HitungBMIdanBMRScreen(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        //  navController.popBackStack()
+                          navController.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
@@ -69,7 +69,7 @@ fun HitungBMIdanBMRScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
@@ -79,7 +79,7 @@ fun HitungBMIdanBMRScreen(navController: NavController) {
                 text = "Masukan Tinggi dan Berat Badan anda",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+                    .padding(bottom = 16.dp, top = 8.dp),
                 style = MaterialTheme.typography.body1,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
@@ -204,6 +204,7 @@ fun HitungBMIdanBMRScreen(navController: NavController) {
                     .height(500.dp)
             ) {
                 ProfileScreenTabs(tabs = listTabs, pagerState = pagerState)
+
             }
 
         }

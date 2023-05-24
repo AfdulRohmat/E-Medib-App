@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.e_medib.R
 import com.example.e_medib.features.home_feature.view.CustomRowInfo
+import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,13 +106,17 @@ fun ProfileScreen(navController: NavController) {
                 title = "Kalkulator BMI/BMR",
                 subtitle = "Ukur BMI dan BMRmu",
                 leadingIcon = Icons.Outlined.Calculate,
-                onClick = {}
+                onClick = {
+                    navController.navigate(AppScreen.HitungBMIScreen.screen_route)
+                }
             )
             CustomProfileListTile(
                 title = "Download Catatan Anda",
                 subtitle = "Unduh Catatan Kesehatan anda",
                 leadingIcon = Icons.Outlined.FileDownload,
-                onClick = {}
+                onClick = {
+                    navController.navigate(AppScreen.DowwnloadRekapScreen.screen_route)
+                }
             )
 
 

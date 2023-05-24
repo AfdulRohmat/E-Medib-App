@@ -51,6 +51,7 @@ fun DetailAktivitasScreen(navController: NavController) {
                 backgroundColor = mRedMain
             )
         }
+
     ) {
         Column(
             modifier = Modifier
