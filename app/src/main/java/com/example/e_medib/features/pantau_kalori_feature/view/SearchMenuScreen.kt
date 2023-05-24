@@ -135,9 +135,10 @@ fun SearchMenuScreen(navController: NavController) {
                 fontWeight = FontWeight.Bold,
                 color = mBlack
             )
-            LazyColumn( modifier = Modifier
-                .fillMaxWidth()
-                .padding( bottom = 60.dp)) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
                 items(10) {
                     CustomListTile()
                 }
