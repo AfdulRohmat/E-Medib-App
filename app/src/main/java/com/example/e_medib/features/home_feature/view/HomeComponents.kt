@@ -35,8 +35,7 @@ fun CustomRowInfo(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

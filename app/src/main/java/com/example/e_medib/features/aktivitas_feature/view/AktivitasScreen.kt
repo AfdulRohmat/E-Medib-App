@@ -51,7 +51,9 @@ fun AktivitasScreen(navController: NavController) {
         }
     ) {
         Column(
-            modifier = Modifier,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 50.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {

@@ -35,7 +35,7 @@ import com.example.e_medib.ui.theme.*
 fun KondisiKesehatanScreen() {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top

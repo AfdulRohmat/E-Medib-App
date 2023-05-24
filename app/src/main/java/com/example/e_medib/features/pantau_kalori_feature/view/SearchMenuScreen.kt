@@ -116,7 +116,7 @@ fun SearchMenuScreen(navController: NavController) {
                 placeholder = {
                     Text(
                         text = "Coba ketik bubur ayam...",
-                        style = MaterialTheme.typography.caption,
+                        style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.SemiBold,
                     )
                 },
@@ -135,7 +135,9 @@ fun SearchMenuScreen(navController: NavController) {
                 fontWeight = FontWeight.Bold,
                 color = mBlack
             )
-            LazyColumn() {
+            LazyColumn( modifier = Modifier
+                .fillMaxWidth()
+                .padding( bottom = 60.dp)) {
                 items(10) {
                     CustomListTile()
                 }
