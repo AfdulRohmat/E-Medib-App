@@ -78,8 +78,8 @@ fun PantauKaloriScreen(navController: NavController) {
             // COLUMN LAYOUT
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 60.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
@@ -469,6 +469,7 @@ fun PantauKaloriScreen(navController: NavController) {
 
                     },
                 )
+                Spacer(modifier = Modifier.height(24.dp))
             }
 
 

@@ -37,7 +37,7 @@ fun HomeScreen(navController: NavController) {
     val today = LocalDate.now()
     val datePickerState =
         rememberDatePickerState(initialDate = LocalDate.now())
-    val listTabs = listOf(HomeScreenTabItem.KondisiKesehatan, HomeScreenTabItem.Diary, )
+    val listTabs = listOf(HomeScreenTabItem.KondisiKesehatan, HomeScreenTabItem.Diary)
     val pagerState = rememberPagerState(initialPage = 0)
 
     Scaffold() {
@@ -111,77 +111,75 @@ fun HomeScreen(navController: NavController) {
                     Card(
                         modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
                         shape = RoundedCornerShape(20.dp),
+                        backgroundColor = mWhite,
                         elevation = 2.dp
                     ) {
-                        Box(
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(color = mWhite)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Column(
+                            // ROW STATUS
+                            Row(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                verticalArrangement = Arrangement.Center
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                // ROW STATUS
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 12.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "Kondisimu Hari ini",
-                                        style = MaterialTheme.typography.caption,
-                                        fontWeight = FontWeight.Normal,
-                                        color = mGrayScale
-                                    )
-                                    Text(
-                                        text = "Jumat, 10 Maret 2023",
-                                        style = MaterialTheme.typography.caption,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = mRedMain
-                                    )
-                                }
-                                Divider(color = mLightGrayScale, thickness = 1.dp)
-
-                                // ROW BMI BMR KALKULATOR
-                                CustomRowInfo(
-                                    modifier = Modifier,
-                                    titleRow1 = "BMI",
-                                    titleRow2 = "BMR",
-                                    titleRow3 = "Kalkulator",
-                                    infoRow1 = "20,7",
-                                    infoRow2 = "1513",
-                                    infoRow3 = "",
-                                    unitRow1 = "",
-                                    unitRow2 = "Cal/day",
-                                    unitRow3 = "",
-                                    useRow3Button = true,
-                                    onRow3Click = {}
+                                Text(
+                                    text = "Kondisimu Hari ini",
+                                    style = MaterialTheme.typography.caption,
+                                    fontWeight = FontWeight.Normal,
+                                    color = mGrayScale
                                 )
-                                Divider(
-                                    modifier = Modifier.padding(top = 16.dp),
-                                    color = mLightGrayScale,
-                                    thickness = 1.dp
+                                Text(
+                                    text = "Jumat, 10 Maret 2023",
+                                    style = MaterialTheme.typography.caption,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = mRedMain
                                 )
-
-                                // ROW GULA DARAH
-                                CustomRowInfo(
-                                    modifier = Modifier,
-                                    titleRow1 = "Gula Darah",
-                                    infoRow1 = "123",
-                                    unitRow1 = "mg/dl",
-                                    titleRow2 = "Tekanan Darah",
-                                    infoRow2 = "-",
-                                    unitRow2 = "mmHg",
-                                    titleRow3 = "Kolesterol",
-                                    infoRow3 = "-",
-                                    unitRow3 = "mg/dl",
-                                )
-
                             }
+                            Divider(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                color = mLightGrayScale,
+                                thickness = 1.dp
+                            )
+
+                            // ROW BMI BMR KALKULATOR
+                            CustomRowInfo(
+                                modifier = Modifier,
+                                titleRow1 = "BMI",
+                                titleRow2 = "BMR",
+                                titleRow3 = "Kalkulator",
+                                infoRow1 = "20,7",
+                                infoRow2 = "1513",
+                                infoRow3 = "",
+                                unitRow1 = "",
+                                unitRow2 = "Cal/day",
+                                unitRow3 = "",
+                                useRow3Button = true,
+                                onRow3Click = {}
+                            )
+
+                            Divider(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                color = mLightGrayScale,
+                                thickness = 1.dp
+                            )
+
+                            // ROW GULA DARAH
+                            CustomRowInfo(
+                                modifier = Modifier,
+                                titleRow1 = "Gula Darah",
+                                infoRow1 = "123",
+                                unitRow1 = "mg/dl",
+                                titleRow2 = "Tekanan Darah",
+                                infoRow2 = "-",
+                                unitRow2 = "mmHg",
+                                titleRow3 = "Kolesterol",
+                                infoRow3 = "-",
+                                unitRow3 = "mg/dl",
+                            )
 
                         }
                     }
