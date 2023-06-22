@@ -11,7 +11,9 @@ sealed class AppScreen(var title: String, var icon: ImageVector?, var screen_rou
     // BOTTOM NAVIGATION
     object Beranda : AppScreen("Beranda", Icons.Rounded.Home, "Beranda")
     object PantauKalori : AppScreen("Pantau Kalori", Icons.Rounded.ReceiptLong, "PantauKalori")
-    object Aktivitas : AppScreen("Aktivitas", Icons.Rounded.DirectionsBike, "Aktivitas")
+    object PilihAktivitasScreen :
+        AppScreen("Pilih Aktivitas", Icons.Rounded.DirectionsBike, "PilihAktivitasScreen")
+
     object Profil : AppScreen("Profil", Icons.Rounded.Person, "Profil")
 
     // NORMAL SCREEN
@@ -20,14 +22,12 @@ sealed class AppScreen(var title: String, var icon: ImageVector?, var screen_rou
     object RegisterScreen : AppScreen("RegisterScreen", null, "RegisterScreen")
     object SearchMenuScreen : AppScreen("SearchMenuScreen", null, "SearchMenuScreen")
     object HitungBMIScreen : AppScreen("HitungBMIScreen", null, "HitungBMIScreen")
-    object DowwnloadRekapScreen :
-        AppScreen("DowwnloadRekapScreen", null, "DowwnloadRekapScreen")
+    object DowwnloadRekapScreen : AppScreen("DowwnloadRekapScreen", null, "DowwnloadRekapScreen")
 
+
+    object Aktivitas : AppScreen("Aktivitas", null, "Aktivitas")
     object MainScreen : AppScreen("MainScreen", null, "MainScreen")
-    object PilihAktivitasScreen :
-        AppScreen("PilihAktivitasScreen", null, "PilihAktivitasScreen")
 
-    object DetailAktivitasScreen :
-        AppScreen("DetailAktivitasScreen", null, "DetailAktivitasScreen")
+    object DetailAktivitasScreen : AppScreen("DetailAktivitasScreen", null, "DetailAktivitasScreen")
 
 }

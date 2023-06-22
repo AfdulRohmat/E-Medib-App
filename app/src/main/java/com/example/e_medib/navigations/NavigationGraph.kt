@@ -2,8 +2,10 @@ package com.example.e_medib.navigations
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.e_medib.features.aktivitas_feature.view.AktivitasScreen
 import com.example.e_medib.features.aktivitas_feature.view.DetailAktivitasScreen
 import com.example.e_medib.features.aktivitas_feature.view.PilihAktivitasScreen
@@ -40,8 +42,13 @@ fun NavigationGraph(navController: NavHostController) {
             RegisterScreen(navController = navController)
         }
 
-        composable(AppScreen.Aktivitas.screen_route) {
-            AktivitasScreen(navController = navController)
+        val aktivitasRoute = AppScreen.Aktivitas.screen_route
+        composable("$aktivitasRoute/{tingkat_aktivitas}", arguments = listOf(
+            navArgument(name = "tingkat_aktivitas", builder = { type = NavType.StringType })
+        )) { navBackStackEntry ->
+            navBackStackEntry.arguments?.getString("tingkat_aktivitas").let { tingkat_aktivitas ->
+                AktivitasScreen(navController = navController, tingkat_aktivitas = tingkat_aktivitas)
+            }
         }
 
         composable(AppScreen.PilihAktivitasScreen.screen_route) {

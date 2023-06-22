@@ -1,5 +1,6 @@
 package com.example.e_medib.features.splash_screen_feature.view
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,8 +9,10 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -17,23 +20,33 @@ import androidx.navigation.NavController
 import com.example.e_medib.R
 import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.mWhite
+import com.example.e_medib.utils.CustomDataStore
 import kotlinx.coroutines.delay
 
 
 @Composable
 fun SplashScreen(navController: NavController) {
+    val context = LocalContext.current
+    val store = CustomDataStore(context)
+    val tokenText = store.getAccessToken.collectAsState(initial = "")
 
     // DELAY FOR SEVERAL TIME THEN GO TO NEXT PAGE
     LaunchedEffect(key1 = true, block = {
-        delay(500L)
-        navController.navigate(AppScreen.LoginScreen.screen_route) {
-//            popUpTo(AppScreen.Beranda.screen_route) {
-//                inclusive = true
-//            }
-            popUpTo(AppScreen.LoginScreen.screen_route) {
+        // delay(500L)
+        Log.d("Token: ", tokenText.value)
+
+        if (tokenText.value.isEmpty()) {
+            navController.navigate(AppScreen.LoginScreen.screen_route) {
+                popUpTo(AppScreen.SplashScreen.screen_route) {
+                    inclusive = true
+                }
+            }
+        } else navController.navigate(AppScreen.Beranda.screen_route) {
+            popUpTo(AppScreen.SplashScreen.screen_route) {
                 inclusive = true
             }
         }
+
     })
 
     Scaffold() {

@@ -125,16 +125,35 @@ fun SearchMenuScreen(navController: NavController) {
             )
 
             // LIST KONSUMSI
-            Text(
-                text = "Terakhir Dikonsumsi",
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(bottom = 16.dp, top = 32.dp),
-                style = MaterialTheme.typography.body1,
-                textAlign = TextAlign.Start,
-                fontWeight = FontWeight.Bold,
-                color = mBlack
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Terakhir Dikonsumsi",
+                    modifier = Modifier
+                        .padding(bottom = 16.dp, top = 32.dp),
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Bold,
+                    color = mBlack
+                )
+
+                // Tambah Food
+                TextButton(onClick = { }) {
+                    Text(
+                        text = "Tambah",
+                        modifier = Modifier
+                            .padding(bottom = 16.dp, top = 32.dp),
+                        style = MaterialTheme.typography.body1,
+                        textAlign = TextAlign.Start,
+                        fontWeight = FontWeight.Bold,
+                        color = mRedMain
+                    )
+                }
+            }
+
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()

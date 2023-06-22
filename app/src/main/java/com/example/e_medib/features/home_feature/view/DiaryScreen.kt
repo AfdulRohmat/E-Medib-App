@@ -1,8 +1,10 @@
 package com.example.e_medib.features.home_feature.view
 
+import CustomBottomSheet
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -10,6 +12,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,12 +23,15 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.example.e_medib.R
 import com.example.e_medib.ui.theme.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun DiaryScreen() {
@@ -38,6 +44,14 @@ fun DiaryScreen() {
         Icons.Filled.KeyboardArrowUp
     else
         Icons.Filled.KeyboardArrowDown
+
+    val scope = rememberCoroutineScope()
+
+    // sheet state
+    val sheetTambahDiary = com.dokar.sheets.rememberBottomSheetState()
+
+    // textfield controller
+    val tambahDiaryState = rememberSaveable() { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -91,7 +105,13 @@ fun DiaryScreen() {
                     color = mGrayScale
                 )
             },
-            buttonLabel = "Tambah Diary", onButtonTap = {},
+            buttonLabel = "Tambah Diary",
+            onButtonTap = {
+
+                scope.launch {
+                    sheetTambahDiary.expand()
+                }
+            },
         )
 
         // CATATAN LUKA
@@ -223,6 +243,59 @@ fun DiaryScreen() {
         )
         Spacer(modifier = Modifier.height(32.dp))
     }
+
+    // ======= BOTTOM SHEET =======
+    // sheet tambah diary
+    CustomBottomSheet(
+        state = sheetTambahDiary,
+        isEnable = tambahDiaryState.value.isNotEmpty(),
+        textFieldTitle = "Tambah Diary",
+        onClick = {
+
+        },
+        body = {
+            // TEXT FIELD
+            Text(
+                text = "Tambah Diary",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            OutlinedTextField(
+                value = tambahDiaryState.value,
+                onValueChange = { tambahDiaryState.value = it },
+                modifier = Modifier
+                    .height(400.dp)
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done
+                ),
+                placeholder = {
+                    Text(
+                        text = "Tambahkan diary...",
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier.padding(6.dp),
+                        textAlign = TextAlign.Start,
+                        fontWeight = FontWeight.Light,
+                        color = mGrayScale
+                    )
+                },
+                shape = RoundedCornerShape(10.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = mWhite,
+                    unfocusedBorderColor = mLightGrayScale,
+                    focusedBorderColor = mLightGrayScale
+                ),
+            )
+
+        })
+
+
 }
 
 

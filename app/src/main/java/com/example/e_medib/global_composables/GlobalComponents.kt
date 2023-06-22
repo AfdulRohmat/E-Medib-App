@@ -3,31 +3,35 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.e_medib.ui.theme.mGrayScale
-import com.example.e_medib.ui.theme.mLightGrayScale
-import com.example.e_medib.ui.theme.mRedMain
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.example.e_medib.ui.theme.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -126,4 +130,88 @@ fun CustomInputField(
         modifier = modifier
             .fillMaxWidth(),
     )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun CustomBottomSheet(
+    modifier: Modifier = Modifier,
+    state: com.dokar.sheets.BottomSheetState,
+    isEnable: Boolean,
+    textFieldTitle: String,
+    onClick: () -> Unit,
+    body: @Composable @UiComposable () -> Unit,
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    com.dokar.sheets.BottomSheet(state) {
+        Column(
+            modifier = modifier
+                .padding(12.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            // TITLE
+            Text(
+                text = "Masukan Data",
+                style = MaterialTheme.typography.body1,
+                fontWeight = FontWeight.SemiBold,
+                color = mBlack
+            )
+
+            // BODY TEXTFIELD
+            body()
+
+            // BUTTON
+            Button(
+                onClick = {
+                    keyboardController?.hide()
+                    onClick()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = mRedMain,
+                    contentColor = mWhite,
+                    disabledBackgroundColor = mLightGrayScale,
+                    disabledContentColor = mBlack
+                ),
+                shape = RoundedCornerShape(32.dp),
+                enabled = isEnable
+            ) {
+                Text(
+                    text = "Simpan",
+                    style = MaterialTheme.typography.body1,
+                    fontWeight = FontWeight.SemiBold,
+                    color = mWhite
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
+fun CustomLoadingOverlay() {
+    Dialog(
+        onDismissRequest = { }, properties = DialogProperties(
+            dismissOnBackPress = false, dismissOnClickOutside = false
+        )
+    ) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(color = Color.Transparent)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircularProgressIndicator(color = mRedMain)
+            }
+        }
+    }
 }

@@ -12,6 +12,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,33 +30,24 @@ import com.example.e_medib.ui.theme.*
 import java.util.*
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PilihAktivitasScreen(navController: NavController) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Pilih Jenis Aktivitas",
+                        text = "Pilih Intensitas Aktivitas",
                         style = MaterialTheme.typography.body1,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.SemiBold,
                         color = mWhite
                     )
                 },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "arrow_back",
-                            tint = mWhite
-                        )
-                    }
-                },
-                backgroundColor = mRedMain
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = mRedMain)
             )
+
         }
     ) {
         Column(
@@ -66,22 +60,29 @@ fun PilihAktivitasScreen(navController: NavController) {
             CustomPilihAktivitasCard(
                 modifier = Modifier,
                 title = "Aktivitas Ringan",
-                caption = "Aktivitas yang dilakukan sehari-hari dengan intensitas rendah dan tidak memerlukan usaha tinggi",
+                caption = "Aktivitas fisik ini hanya memerlukan sedikit tenaga dan biasanya tidak menyebabkan perubahan dalam pernapasan, saat melakukan aktivitas masih dapat berbicara dan bernyanyi",
+                color = mGreen,
                 onClick = {
-                    navController.navigate(AppScreen.DetailAktivitasScreen.screen_route)
+                    navController.navigate(AppScreen.Aktivitas.screen_route + "/RINGAN")
                 },
             )
             CustomPilihAktivitasCard(
                 modifier = Modifier.padding(top = 16.dp),
-                title = "Aktivitas Ringan",
-                caption = "Aktivitas yang dilakukan sehari-hari dengan intensitas rendah dan tidak memerlukan usaha tinggi",
-                onClick = {},
+                title = "Aktivitas Sedang",
+                caption = "Aktivitas fisik sedang adalah aktivitas fisik dengan kebutuhan kalori sebesar 3,5 - 7 Kcal/menit. Saat menjalankan aktivitas fisik sedang, tubuh akan sedikit berkeringat, ritme napas lebih cepat, dan denyut jantung sedikit lebih kuat",
+                color = mYellow,
+                onClick = {
+                    navController.navigate(AppScreen.Aktivitas.screen_route + "/SEDANG")
+                },
             )
             CustomPilihAktivitasCard(
                 modifier = Modifier.padding(top = 16.dp),
-                title = "Aktivitas Ringan",
-                caption = "Aktivitas yang dilakukan sehari-hari dengan intensitas rendah dan tidak memerlukan usaha tinggi",
-                onClick = {},
+                title = "Aktivitas Berat",
+                caption = "Aktivitas fisik dikategorikan berat apabila selama beraktivitas tubuh mengeluarkan banyak berkeringat, denyut jantung dan frekuensi nafas sangat meningkat sampai dengan kehabisan napas.Energi yang dikeluarkan saat melakukan aktivitas pada kategori ini > 7 Kcal/menit.",
+                color = mRedMain,
+                onClick = {
+                    navController.navigate(AppScreen.Aktivitas.screen_route + "/BERAT")
+                },
             )
 
 
@@ -97,13 +98,9 @@ fun CustomPilihAktivitasCard(
     modifier: Modifier = Modifier,
     title: String,
     caption: String,
+    color: Color,
     onClick: () -> Unit
 ) {
-    val rnd = Random()
-    val red = rnd.nextInt(256)
-    val green = rnd.nextInt(256)
-    val blue = rnd.nextInt(256)
-    val randomColor = Color(red, green, blue)
 
     Card(
         modifier = modifier
@@ -127,7 +124,7 @@ fun CustomPilihAktivitasCard(
                 modifier = modifier
                     .clip(RoundedCornerShape(100.dp))
                     .size(24.dp)
-                    .background(color = randomColor)
+                    .background(color)
             )
             Column(
                 modifier = Modifier

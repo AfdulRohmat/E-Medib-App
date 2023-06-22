@@ -1,5 +1,6 @@
 package com.example.e_medib.features.profile_feature.view
 
+import CustomLoadingOverlay
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -11,27 +12,58 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.e_medib.R
+import com.example.e_medib.features.aktivitas_feature.view_model.AktivitasViewModel
 import com.example.e_medib.features.home_feature.view.CustomRowInfo
+import com.example.e_medib.features.home_feature.view_model.HomeViewModel
+import com.example.e_medib.features.profile_feature.view_model.ProfileViewModel
 import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
+import com.example.e_medib.utils.CustomDataStore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(
+    navController: NavController,
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
+) {
+    val context = LocalContext.current
+    var showLogoutDialog by remember {
+        mutableStateOf(false)
+    }
+
+    val store = CustomDataStore(context)
+    val tokenText = store.getAccessToken.collectAsState(initial = "")
+
+    LaunchedEffect(Unit, block = {
+        val headerMap = mutableMapOf<String, String>()
+        headerMap["Accept"] = "application/json"
+        headerMap["Authorization"] = "Bearer ${tokenText.value}"
+        homeViewModel.getDataUser(headerMap)
+        profileViewModel.getAllBMI(headerMap)
+        profileViewModel.getAllBMR(headerMap)
+    })
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -57,7 +89,7 @@ fun ProfileScreen(navController: NavController) {
             verticalArrangement = Arrangement.Top
         ) {
             // BOX PROFILE
-            CustomBoxProfile()
+            CustomBoxProfile(modifier = Modifier, profileViewModel, homeViewModel)
 
             // BUTTON EDIT
             OutlinedButton(
@@ -149,9 +181,36 @@ fun ProfileScreen(navController: NavController) {
                 leadingIcon = Icons.Outlined.HelpOutline,
                 onClick = {}
             )
+            CustomProfileListTile(
+                title = "Log Out",
+                subtitle = "Logout dari akun anda",
+                leadingIcon = Icons.Outlined.Logout,
+                onClick = {
+                    showLogoutDialog = !showLogoutDialog
+                }
+            )
 
         }
 
+    }
+
+    if (showLogoutDialog) {
+        LogoutDialog(onDismiss = { showLogoutDialog = !showLogoutDialog }, onLogout = {
+            showLogoutDialog = !showLogoutDialog
+            profileViewModel.doLogout(context, navigate = {
+                // CLEAR ALL SCREEN THEN GO TO SPLASHSCREEN
+                navController.navigate(AppScreen.SplashScreen.screen_route) {
+                    popUpTo(navController.graph.id) {
+                        inclusive = true
+                    }
+                }
+            })
+        })
+    }
+
+    // LOADING OVERLAY
+    if (profileViewModel.isLoading) {
+        CustomLoadingOverlay()
     }
 }
 
@@ -219,7 +278,11 @@ fun CustomProfileListTile(
 }
 
 @Composable
-fun CustomBoxProfile(modifier: Modifier = Modifier) {
+fun CustomBoxProfile(
+    modifier: Modifier = Modifier,
+    profileViewModel: ProfileViewModel,
+    homeViewModel: HomeViewModel
+) {
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -250,15 +313,16 @@ fun CustomBoxProfile(modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = "Zulfikri",
+                    text = "${homeViewModel.userData?.data?.nama_lengkap}",
                     modifier = modifier.padding(top = 8.dp),
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Ellipsis,
                     color = mBlack
                 )
 
                 Text(
-                    text = "@zulfikri123",
+                    text = "${homeViewModel.userData?.data?.username}",
                     style = MaterialTheme.typography.caption,
                     fontWeight = FontWeight.Bold,
                     color = mGrayScale
@@ -276,8 +340,8 @@ fun CustomBoxProfile(modifier: Modifier = Modifier) {
                     titleRow1 = "BMI",
                     titleRow2 = "BMR",
                     titleRow3 = "",
-                    infoRow1 = "20,7",
-                    infoRow2 = "1513",
+                    infoRow1 = "${profileViewModel.recentBMIData.bmi}",
+                    infoRow2 = "${profileViewModel.recentBMRData.bmr}",
                     infoRow3 = "",
                     unitRow1 = "Kg/M2",
                     unitRow2 = "Cal/day",
@@ -293,10 +357,10 @@ fun CustomBoxProfile(modifier: Modifier = Modifier) {
                 CustomRowInfo(
                     modifier = Modifier,
                     titleRow1 = "Tinggi Badan",
-                    infoRow1 = "173",
+                    infoRow1 = "${profileViewModel.recentBMIData.tinggi_badan}",
                     unitRow1 = "cm",
                     titleRow2 = "Berat Badan",
-                    infoRow2 = "56",
+                    infoRow2 = "${profileViewModel.recentBMIData.berat_badan}",
                     unitRow2 = "kg",
                     titleRow3 = "",
                     infoRow3 = "",
@@ -308,6 +372,84 @@ fun CustomBoxProfile(modifier: Modifier = Modifier) {
 
     }
 
+}
+
+@Composable
+fun LogoutDialog(onDismiss: () -> Unit, onLogout: () -> Unit) {
+    Dialog(
+        onDismissRequest = { onDismiss() }, properties = DialogProperties(
+            dismissOnBackPress = true, dismissOnClickOutside = true
+        )
+    ) {
+        Card(
+            shape = RoundedCornerShape(10.dp),
+            // modifier = modifier.size(280.dp, 240.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            elevation = 8.dp
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Logout",
+                        style = MaterialTheme.typography.h6,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.SemiBold,
+                        color = mBlack
+                    )
+                }
+
+
+                Text(
+                    text = "Apakah anda yakin untuk keluar dari aplikasi ?",
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Normal,
+                    color = mBlack
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    // KEMBALI
+                    TextButton(onClick = { onDismiss() }) {
+                        Text(
+                            text = "Kembali",
+                            style = MaterialTheme.typography.body1,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Normal,
+                            color = mBlack
+                        )
+                    }
+
+                    // LOGOUT
+                    TextButton(onClick = { onLogout() }) {
+                        Text(
+                            text = "Logout",
+                            style = MaterialTheme.typography.body1,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Normal,
+                            color = mRedMain
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 

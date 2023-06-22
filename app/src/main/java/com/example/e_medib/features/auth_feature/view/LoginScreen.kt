@@ -7,12 +7,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,11 +25,15 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.e_medib.R
+import com.example.e_medib.features.auth_feature.model.LoginModel
 import com.example.e_medib.features.auth_feature.view.components.CustomLoginInputField
+import com.example.e_medib.features.auth_feature.view_model.AuthViewModel
 import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -43,6 +49,7 @@ fun LoginScreen(navController: NavController) {
 @Composable
 fun LoginScreenComponent(
     navController: NavController,
+    authViewModel: AuthViewModel = hiltViewModel(),
     onDone: (String, String) -> Unit = { username, password -> }
 ) {
     val username = rememberSaveable() { mutableStateOf("") }
@@ -53,6 +60,7 @@ fun LoginScreenComponent(
     val isValidEmailOrPassword = remember(username.value, password.value) {
         username.value.trim().isNotEmpty() && password.value.trim().isNotEmpty()
     }
+    val mContext = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -128,10 +136,15 @@ fun LoginScreenComponent(
 
         // button
         Button(
+
             onClick = {
                 onDone(username.value.trim(), password.value.trim())
                 keyboardController?.hide()
-                navController.navigate(AppScreen.Beranda.screen_route)
+                val loginData = LoginModel(username = username.value, password = password.value)
+                authViewModel.doLogin(loginData, context = mContext, navigate = {
+                    navController.navigate(AppScreen.Beranda.screen_route)
+                })
+
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -143,7 +156,7 @@ fun LoginScreenComponent(
                 disabledContentColor = mBlack
             ),
             shape = RoundedCornerShape(32.dp),
-            enabled = !isLoading.value && isValidEmailOrPassword
+            enabled = !authViewModel.isLoading && isValidEmailOrPassword
         ) {
             Text(
                 text = "Login",

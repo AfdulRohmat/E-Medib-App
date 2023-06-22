@@ -4,7 +4,9 @@ import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -59,7 +61,7 @@ fun MainScreenView() {
     val screens = listOf(
         AppScreen.Beranda,
         AppScreen.PantauKalori,
-        AppScreen.Aktivitas,
+        AppScreen.PilihAktivitasScreen,
         AppScreen.Profil,
     )
 
@@ -81,19 +83,24 @@ fun MainScreenView() {
                             selected = currentRoute == screen.screen_route,
                             icon = {
                                 screen.icon?.let {
-                                    Icon(
-                                        imageVector = it,
-                                        contentDescription = "icon"
-                                    )
+                                    Row(horizontalArrangement = Arrangement.Center) {
+                                        Icon(
+                                            imageVector = it,
+                                            contentDescription = "icon"
+                                        )
+                                    }
                                 }
                             },
                             label = {
-                                androidx.compose.material3.Text(
-                                    text = screen.title,
-                                    style = MaterialTheme.typography.caption,
-                                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Light,
-                                    color = if (selected) mRedMain else mGrayScale
-                                )
+                                Row(horizontalArrangement = Arrangement.Center) {
+                                    androidx.compose.material3.Text(
+                                        text = screen.title,
+                                        style = MaterialTheme.typography.caption,
+                                        fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Light,
+                                        color = if (selected) mRedMain else mGrayScale
+                                    )
+                                }
+
                             },
                             selectedContentColor = mRedMain,
                             unselectedContentColor = mGrayScale,

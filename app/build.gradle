@@ -57,7 +57,7 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-compose:1.1.0-alpha01"
 
     // Material icons - use with caution!
-    implementation "androidx.compose.material:material-icons-extended:1.5.0-alpha03"
+    implementation "androidx.compose.material:material-icons-extended:1.5.0-beta02"
 
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
@@ -89,12 +89,20 @@ dependencies {
     implementation "com.google.accompanist:accompanist-pager-indicators:0.23.0"
 
     // COMPOSE MATERIAL 3
-    implementation 'androidx.compose.material3:material3:1.0.1'
-    implementation 'androidx.compose.material3:material3-window-size-class:1.0.1'
+    implementation 'androidx.compose.material3:material3:1.1.0'
+    implementation 'androidx.compose.material3:material3-window-size-class:1.1.0'
 
-    implementation 'androidx.core:core-ktx:1.10.0'
+    // DATA STORE FOR SAVING TOKEN
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
+    implementation 'androidx.datastore:datastore-preferences-rxjava2:1.0.0'
+    implementation 'androidx.datastore:datastore-preferences-rxjava3:1.0.0'
+
+    // BOTTOMSHEET
+    implementation "io.github.dokar3:sheets:0.4.3"
+
+    implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
-    implementation 'androidx.activity:activity-compose:1.7.1'
+    implementation 'androidx.activity:activity-compose:1.7.2'
     implementation "androidx.compose.ui:ui:$compose_ui_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
     implementation 'androidx.compose.material:material:1.4.3'
