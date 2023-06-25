@@ -168,4 +168,6 @@ class PantauKaloriViewModel @Inject constructor(private val pantauKaloriReposito
             }
         }
     }
+
+
 }

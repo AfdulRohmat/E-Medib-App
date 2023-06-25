@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.e_medib.data.Resource
+import com.example.e_medib.features.home_feature.model.diary.response.GetAllDiaryResponse
 import com.example.e_medib.features.home_feature.model.hba1c.DataHba1cModel
 import com.example.e_medib.features.home_feature.model.hba1c.getAll.GetAllHba1cResponse
 import com.example.e_medib.features.profile_feature.model.bmiModel.BMIResponse
@@ -21,6 +22,7 @@ import com.example.e_medib.utils.CustomDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,16 +32,18 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
     var isLoading: Boolean by mutableStateOf(false)
 
+    var allDiaryRekapData: GetAllDiaryResponse by mutableStateOf(GetAllDiaryResponse(data = listOf()))
+
     var recentBMIData: BMIResponse by mutableStateOf(BMIResponse())
     var recentBMRData: BMRResponse by mutableStateOf(BMRResponse())
 
-    fun doLogout(context: Context, navigate: () -> Unit) {
+    fun doLogout(headers: Map<String, String>, context: Context, navigate: () -> Unit) {
         val localStorage = CustomDataStore(context)
 
         viewModelScope.launch {
             isLoading = true
             try {
-                when (val response = profieRepository.doLogout()) {
+                when (val response = profieRepository.doLogout(headers)) {
                     is Resource.Success -> {
                         Toast.makeText(
                             context, "Berhasil logout, mohon tunggu",
@@ -50,6 +54,7 @@ class ProfileViewModel @Inject constructor(
                         CoroutineScope(Dispatchers.IO).launch {
                             localStorage.deleteToken()
                         }
+                        delay(1000L)
                         navigate()
                         Log.d("Logout sukses", "${response.data?.meta}")
 
@@ -80,7 +85,7 @@ class ProfileViewModel @Inject constructor(
             try {
                 when (val response = profieRepository.getAllBMI(headers)) {
                     is Resource.Success -> {
-                        recentBMIData = response.data!!.data.last()
+                        recentBMIData = response.data!!.data.first()
                     }
                     is Resource.Error -> {
                         Log.d("Error", "${response.message}")
@@ -129,7 +134,7 @@ class ProfileViewModel @Inject constructor(
             try {
                 when (val response = profieRepository.getAllBMR(headers)) {
                     is Resource.Success -> {
-                        recentBMRData = response.data!!.data.last()
+                        recentBMRData = response.data!!.data.first()
                     }
                     is Resource.Error -> {
                         Log.d("Error", "${response.message}")
@@ -172,5 +177,27 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    fun getAllDiaryRekap(headers: Map<String, String>) {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                when (val response = profieRepository.getAllDiaryRekap(headers)) {
+                    is Resource.Success -> {
+                        allDiaryRekapData = response.data!!
+                    }
+                    is Resource.Error -> {
+                        Log.d("Error", "${response.message}")
+                    }
+                    else -> {
+                        Log.d("Data", "$response")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("Error Catch", "$e")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 
 }

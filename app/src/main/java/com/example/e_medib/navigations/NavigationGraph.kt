@@ -6,14 +6,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.e_medib.features.aktivitas_feature.view.AktivitasScreen
-import com.example.e_medib.features.aktivitas_feature.view.DetailAktivitasScreen
-import com.example.e_medib.features.aktivitas_feature.view.PilihAktivitasScreen
+import com.example.e_medib.features.aktivitas_feature.view.AktivitasPenggunaScreen
+import com.example.e_medib.features.aktivitas_feature.view.DaftarAktivitasScreen
+import com.example.e_medib.features.aktivitas_feature.view.PilihKategoryAktivitasScreen
 import com.example.e_medib.features.auth_feature.view.LoginScreen
 import com.example.e_medib.features.auth_feature.view.RegisterScreen
 import com.example.e_medib.features.home_feature.view.HomeScreen
 import com.example.e_medib.features.pantau_kalori_feature.view.PantauKaloriScreen
-import com.example.e_medib.features.pantau_kalori_feature.view.SearchMenuScreen
 import com.example.e_medib.features.profile_feature.view.DowwnloadRekapScreen
 import com.example.e_medib.features.profile_feature.view.HitungBMIdanBMRScreen
 import com.example.e_medib.features.profile_feature.view.ProfileScreen
@@ -42,26 +41,36 @@ fun NavigationGraph(navController: NavHostController) {
             RegisterScreen(navController = navController)
         }
 
-        val aktivitasRoute = AppScreen.Aktivitas.screen_route
-        composable("$aktivitasRoute/{tingkat_aktivitas}", arguments = listOf(
-            navArgument(name = "tingkat_aktivitas", builder = { type = NavType.StringType })
-        )) { navBackStackEntry ->
+        composable(AppScreen.PilihKategoriAktivitasScreen.screen_route) {
+            PilihKategoryAktivitasScreen(navController = navController)
+        }
+
+        val aktivitaPenggunaRoute = AppScreen.AktivitasPenggunaScreen.screen_route
+        composable(
+            "$aktivitaPenggunaRoute/{tingkat_aktivitas}", arguments = listOf(
+                navArgument(name = "tingkat_aktivitas", builder = { type = NavType.StringType })
+            )
+        ) { navBackStackEntry ->
             navBackStackEntry.arguments?.getString("tingkat_aktivitas").let { tingkat_aktivitas ->
-                AktivitasScreen(navController = navController, tingkat_aktivitas = tingkat_aktivitas)
+                AktivitasPenggunaScreen(
+                    navController = navController,
+                    tingkat_aktivitas = tingkat_aktivitas
+                )
             }
         }
 
-        composable(AppScreen.PilihAktivitasScreen.screen_route) {
-            PilihAktivitasScreen(navController = navController)
-        }
-
-        composable(AppScreen.DetailAktivitasScreen.screen_route) {
-            DetailAktivitasScreen(navController = navController)
-        }
-
-
-        composable(AppScreen.SearchMenuScreen.screen_route) {
-            SearchMenuScreen(navController = navController)
+        val aktivitasRoute = AppScreen.DaftarAktivitasScreen.screen_route
+        composable(
+            "$aktivitasRoute/{tingkat_aktivitas}", arguments = listOf(
+                navArgument(name = "tingkat_aktivitas", builder = { type = NavType.StringType })
+            )
+        ) { navBackStackEntry ->
+            navBackStackEntry.arguments?.getString("tingkat_aktivitas").let { tingkat_aktivitas ->
+                DaftarAktivitasScreen(
+                    navController = navController,
+                    tingkat_aktivitas = tingkat_aktivitas
+                )
+            }
         }
 
         composable(AppScreen.PantauKalori.screen_route) {

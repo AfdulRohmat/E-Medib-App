@@ -61,7 +61,7 @@ fun MainScreenView() {
     val screens = listOf(
         AppScreen.Beranda,
         AppScreen.PantauKalori,
-        AppScreen.PilihAktivitasScreen,
+        AppScreen.PilihKategoriAktivitasScreen,
         AppScreen.Profil,
     )
 

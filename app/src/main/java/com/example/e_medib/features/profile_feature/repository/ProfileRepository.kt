@@ -1,6 +1,10 @@
 package com.example.e_medib.features.profile_feature.repository
 
+import android.util.Log
 import com.example.e_medib.data.Resource
+import com.example.e_medib.features.home_feature.model.diary.DataDiaryModel
+import com.example.e_medib.features.home_feature.model.diary.response.DiaryResponse
+import com.example.e_medib.features.home_feature.model.diary.response.GetAllDiaryResponse
 import com.example.e_medib.features.pantau_kalori_feature.model.DataKonsumsiMakananModel
 import com.example.e_medib.features.pantau_kalori_feature.model.getAll.GetAllKonsumsiMakananResponse
 import com.example.e_medib.features.pantau_kalori_feature.model.getAll.KonsumsiMakananResponse
@@ -16,12 +20,14 @@ import javax.inject.Inject
 
 class ProfileRepository @Inject constructor(private val eMedibApi: EMedibApi) {
     // DO LOGOUT
-    suspend fun doLogout(): Resource<LogoutModelResponse> {
+    suspend fun doLogout(headers: Map<String, String>): Resource<LogoutModelResponse> {
         Resource.Loading(data = true)
         return try {
-            val dataLogout = eMedibApi.doLogout()
+            val dataLogout = eMedibApi.doLogout(headers)
+            Log.d("repo logout", "$dataLogout")
             Resource.Success(data = dataLogout)
         } catch (e: Exception) {
+            Log.d("repo logout error", "$e")
             Resource.Error(message = e.message.toString())
         } finally {
             Resource.Loading(data = false)
@@ -82,6 +88,21 @@ class ProfileRepository @Inject constructor(private val eMedibApi: EMedibApi) {
         Resource.Loading(data = true)
         return try {
             val response = eMedibApi.hitungBMR(data, headers)
+            Resource.Success(data = response)
+        } catch (e: Exception) {
+            Resource.Error(message = e.message.toString())
+        } finally {
+            Resource.Loading(data = false)
+        }
+    }
+
+    // DIARY REKAP
+    suspend fun getAllDiaryRekap(
+        headers: Map<String, String>,
+    ): Resource<GetAllDiaryResponse> {
+        Resource.Loading(data = true)
+        return try {
+            val response = eMedibApi.getAllDiaryRekap(headers)
             Resource.Success(data = response)
         } catch (e: Exception) {
             Resource.Error(message = e.message.toString())

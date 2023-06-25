@@ -1,10 +1,20 @@
 package com.example.e_medib.network
 
-import com.example.e_medib.features.aktivitas_feature.model.DataUbahDurasiAktivitasModel
-import com.example.e_medib.features.aktivitas_feature.model.getAll.AktivitasResponse
-import com.example.e_medib.features.aktivitas_feature.model.getAll.GetAllAktivitasResponse
+import com.example.e_medib.features.aktivitas_feature.model.DataCreateAktivitasPenggunaModel
+import com.example.e_medib.features.aktivitas_feature.model.DataUpdateAktivitasPenggunaModel
+import com.example.e_medib.features.aktivitas_feature.model.response.getAllAktivitasPengguna.AktivitasPenggunaResponse
+import com.example.e_medib.features.aktivitas_feature.model.response.getAllAktivitasPengguna.GetAllAktivitasPenggunaResponse
+import com.example.e_medib.features.aktivitas_feature.model.response.getAllDaftarAktivitas.GetAllDaftarAktivitasResponse
+import com.example.e_medib.features.auth_feature.model.DataRegisterModel
 import com.example.e_medib.features.auth_feature.model.LoginModel
-import com.example.e_medib.features.auth_feature.model.response.LoginModelResponse
+import com.example.e_medib.features.auth_feature.model.response.loginResponse.LoginModelResponse
+import com.example.e_medib.features.auth_feature.model.response.registerResponse.RegisterResponse
+import com.example.e_medib.features.home_feature.model.catatan.DataCatatanModel
+import com.example.e_medib.features.home_feature.model.catatan.response.CatatanResponse
+import com.example.e_medib.features.home_feature.model.catatan.response.GetAllCatatanRespone
+import com.example.e_medib.features.home_feature.model.diary.DataDiaryModel
+import com.example.e_medib.features.home_feature.model.diary.response.DiaryResponse
+import com.example.e_medib.features.home_feature.model.diary.response.GetAllDiaryResponse
 import com.example.e_medib.features.home_feature.model.gulaDarah.DataGulaDarahModel
 import com.example.e_medib.features.home_feature.model.gulaDarah.getAll.GetAllGulaDarahResponse
 import com.example.e_medib.features.home_feature.model.gulaDarah.hitung.HitungGulDarahResponse
@@ -38,9 +48,15 @@ interface EMedibApi {
     @POST("login")
     suspend fun doLogin(@Body login: LoginModel?): LoginModelResponse
 
+
+    // REGISTER API
+    @POST("register")
+    suspend fun doRegister(@Body data: DataRegisterModel): RegisterResponse
+
+
     // LOGOUT
     @GET("logout")
-    suspend fun doLogout(): LogoutModelResponse
+    suspend fun doLogout(@HeaderMap headers: Map<String, String>): LogoutModelResponse
 
     // =========================== HOMESCREEN =========================
     // GET DATA USER
@@ -50,77 +66,115 @@ interface EMedibApi {
     // TEKANAN DARAH
     @POST("hitung-tekanan-darah")
     suspend fun hitungTekananDarah(
-        @Body data: DataTekananDarahModel?,
-        @HeaderMap headers: Map<String, String>
+        @Body data: DataTekananDarahModel?, @HeaderMap headers: Map<String, String>
     ): HitungTekananDarahResponse
 
     @GET("tekanan-darah")
     suspend fun getAllTekananDarah(
-        @Query("tanggal") tanggal: String,
-        @HeaderMap headers: Map<String, String>
+        @Query("tanggal") tanggal: String, @HeaderMap headers: Map<String, String>
     ): GetAllTekananDarahResponse
 
     // KOLESTEROL
     @POST("hitung-kolsterol")
     suspend fun hitungKolesterol(
-        @Body data: DataKolesterolModel,
-        @HeaderMap headers: Map<String, String>
+        @Body data: DataKolesterolModel, @HeaderMap headers: Map<String, String>
     ): HitungKolesterolResponse
 
     @GET("kolesterol")
     suspend fun getAllKolesterol(
-        @Query("tanggal") tanggal: String,
-        @HeaderMap headers: Map<String, String>
+        @Query("tanggal") tanggal: String, @HeaderMap headers: Map<String, String>
     ): GetAllKolesterolResponse
 
     // GULA DARAH
     @POST("hitung-gula-darah")
     suspend fun hitungGulaDarah(
-        @Body data: DataGulaDarahModel,
-        @HeaderMap headers: Map<String, String>
+        @Body data: DataGulaDarahModel, @HeaderMap headers: Map<String, String>
     ): HitungGulDarahResponse
 
     @GET("gula-darah")
     suspend fun getAllGulaDarah(
-        @Query("tanggal") tanggal: String,
-        @HeaderMap headers: Map<String, String>
+        @Query("tanggal") tanggal: String, @HeaderMap headers: Map<String, String>
     ): GetAllGulaDarahResponse
 
     // HBA1C
     @POST("hitung-hba1c")
     suspend fun hitungHba1c(
-        @Body data: DataHba1cModel,
-        @HeaderMap headers: Map<String, String>
+        @Body data: DataHba1cModel, @HeaderMap headers: Map<String, String>
     ): HitungHba1cResponse
 
     @GET("hba1c")
     suspend fun getAllHba1c(
-        @Query("tanggal") tanggal: String,
-        @HeaderMap headers: Map<String, String>
+        @Query("tanggal") tanggal: String, @HeaderMap headers: Map<String, String>
     ): GetAllHba1cResponse
+
+    // GET ALL CATATAM
+    @GET("diaries")
+    suspend fun getAllCatatan(
+        @HeaderMap headers: Map<String, String>, @Query("tanggal") tanggal: String
+    ): GetAllCatatanRespone
+
+    // TAMBAH CATATAN
+    @POST("diaries")
+    suspend fun tambahCatatan(
+        @Body data: DataCatatanModel, @HeaderMap headers: Map<String, String>
+    ): CatatanResponse
+
+    // GET CATATAN BY ID
+    @GET("diaries/{id}")
+    suspend fun getCatatanById(
+        @HeaderMap headers: Map<String, String>, @Path("id") id: Int,
+    ): CatatanResponse
+
+    // GET ALL DIARY LAPORAN
+    @GET("rekap")
+    suspend fun getAllDiaryRekap(
+        @HeaderMap headers: Map<String, String>
+    ): GetAllDiaryResponse
+
+    // CREATE DIARY LAPORAN
+    @POST("tambah-rekap")
+    suspend fun tambahDiaryRekap(
+        @Body data: DataDiaryModel, @HeaderMap headers: Map<String, String>
+    ): DiaryResponse
 
 
     // =========================== AKTIVITAS =========================
-    // GET DATA AKTIVITAS
+    // GET DAFTAR AKTIVITAS SEED
     @GET("aktivitas")
-    suspend fun getAllAktivitas(
+    suspend fun getAllDaftarAktivitas(
         @HeaderMap headers: Map<String, String>,
         @Query("tingkat_aktivitas") tingkatAktivitas: String
-    ): GetAllAktivitasResponse
+    ): GetAllDaftarAktivitasResponse
 
-    // UPDATE AKTIVITAS
-    @PATCH("ubah-durasi-aktivitas/{id}")
-    suspend fun ubahDurasiAktivitas(
-        @Path("id") id: String,
+    // GET AKTIVITAS PENGGUNA
+    @GET("aktivitas-user")
+    suspend fun getAllAktivitasPengguna(
         @HeaderMap headers: Map<String, String>,
-        @Body data: DataUbahDurasiAktivitasModel
-    ): AktivitasResponse
+        @Query("tingkat_aktivitas") tingkatAktivitas: String,
+        @Query("tanggal") tanggal: String,
+    ): GetAllAktivitasPenggunaResponse
 
-    // RESET AKTIVITAS
-    @GET("reset")
-    suspend fun resetAllAktivitas(
+    // CREATE AKTIVITAS PENGGUNA
+    @POST("aktivitas-user")
+    suspend fun tabmbahAktivitasPengguna(
         @HeaderMap headers: Map<String, String>,
-    )
+        @Body data: DataCreateAktivitasPenggunaModel,
+    ): AktivitasPenggunaResponse
+
+    // EDIT AKTIVITAS PENGGUNA
+    @PATCH("aktivitas-user/{id}")
+    suspend fun editAktivitasPengguna(
+        @HeaderMap headers: Map<String, String>,
+        @Path("id") id: Int,
+        @Body data: DataUpdateAktivitasPenggunaModel,
+    ): AktivitasPenggunaResponse
+
+    // DELETE AKTIVITAS PENGGUNA
+    @DELETE("aktivitas-user/{id}")
+    suspend fun deleteAktivitasPengguna(
+        @HeaderMap headers: Map<String, String>,
+        @Path("id") id: Int,
+    ): Any
 
 
     // =========================== PANTAU KALORI SCREEN =========================
@@ -136,16 +190,14 @@ interface EMedibApi {
     // POST KONSUMSI MAKANAN
     @POST("tambah-konsumsi-makanan")
     suspend fun tambahKonsumsiMakanan(
-        @Body data: DataKonsumsiMakananModel,
-        @HeaderMap headers: Map<String, String>
+        @Body data: DataKonsumsiMakananModel, @HeaderMap headers: Map<String, String>
     ): KonsumsiMakananResponse
 
     // =========================== PROFILE SCREEN =========================
     // POST BMI
     @POST("hitung-bmi")
     suspend fun hitungBMI(
-        @Body data: DataBMIModel,
-        @HeaderMap headers: Map<String, String>
+        @Body data: DataBMIModel, @HeaderMap headers: Map<String, String>
     ): BMIResponse
 
     // GET ALL BMI
@@ -157,8 +209,7 @@ interface EMedibApi {
     // POST BMR
     @POST("hitung-bmr")
     suspend fun hitungBMR(
-        @Body data: DataBMRModel,
-        @HeaderMap headers: Map<String, String>
+        @Body data: DataBMRModel, @HeaderMap headers: Map<String, String>
     ): BMRResponse
 
     // GET ALL BMI

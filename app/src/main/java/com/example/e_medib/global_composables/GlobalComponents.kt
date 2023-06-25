@@ -103,6 +103,7 @@ fun CustomInputField(
     placeholder: String,
     isEnable: Boolean = true,
     isSingleLine: Boolean = true,
+    readOnly:Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
     onAction: KeyboardActions = KeyboardActions.Default,
@@ -118,6 +119,7 @@ fun CustomInputField(
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
         keyboardActions = onAction,
         shape = RoundedCornerShape(10.dp),
+        readOnly = readOnly,
         visualTransformation = visualTransformation,
         trailingIcon = trailingIcon,
         colors = TextFieldDefaults.outlinedTextFieldColors(

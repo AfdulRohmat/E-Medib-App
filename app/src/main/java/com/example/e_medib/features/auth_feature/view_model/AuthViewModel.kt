@@ -9,8 +9,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.e_medib.data.Resource
+import com.example.e_medib.features.auth_feature.model.DataRegisterModel
 import com.example.e_medib.features.auth_feature.model.LoginModel
-import com.example.e_medib.features.auth_feature.model.response.LoginModelResponse
 import com.example.e_medib.features.auth_feature.repository.AuthRepository
 import com.example.e_medib.utils.CustomDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -64,9 +64,49 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
             } catch (e: Exception) {
                 Log.d("Login Error", "$e")
 
-            }finally {
+            } finally {
                 isLoading = false
             }
         }
     }
+
+    // REGISTER
+    fun doRegister(data: DataRegisterModel, context: Context, navigate: () -> Unit) {
+        viewModelScope.launch {
+            isLoading = true
+
+            try {
+                when (val response = authRepository.doRegister(data)) {
+                    is Resource.Success -> {
+                        Toast.makeText(
+                            context, "Berhasil membuat akun, mohon login",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        delay(1000L)
+                        navigate()
+                    }
+                    is Resource.Error -> {
+                        Log.d("Register", "${response.message}")
+                        Toast.makeText(
+                            context, "Register gagal, coba lagi",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    }
+                    else -> {
+                        Log.d("Register", "${response}")
+                    }
+                }
+
+            } catch (e: Exception) {
+                Log.d("Register Error", "$e")
+
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+
 }

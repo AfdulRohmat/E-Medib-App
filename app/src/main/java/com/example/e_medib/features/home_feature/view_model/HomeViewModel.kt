@@ -1,11 +1,16 @@
 package com.example.e_medib.features.home_feature.view_model
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.e_medib.data.Resource
+import com.example.e_medib.features.home_feature.model.catatan.DataCatatanModel
+import com.example.e_medib.features.home_feature.model.catatan.response.GetAllCatatanRespone
+import com.example.e_medib.features.home_feature.model.diary.DataDiaryModel
 import com.example.e_medib.features.home_feature.model.gulaDarah.DataGulaDarahModel
 import com.example.e_medib.features.home_feature.model.gulaDarah.getAll.GetAllGulaDarahResponse
 import com.example.e_medib.features.home_feature.model.gulaDarah.getAll.GulaDarahData
@@ -20,7 +25,13 @@ import com.example.e_medib.features.home_feature.model.tekananDarah.getAll.Tekan
 import com.example.e_medib.features.home_feature.model.tekananDarah.getAll.GetAllTekananDarahResponse
 import com.example.e_medib.features.home_feature.model.userData.DataUserModelResponse
 import com.example.e_medib.features.home_feature.repository.HomeRepository
+import com.example.e_medib.features.home_feature.roomDatabase.RekapModelEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -49,9 +60,44 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
     var todayGulaDarah: GulaDarahData by mutableStateOf(GulaDarahData())
     var todayKolesterol: KolesterolData by mutableStateOf(KolesterolData())
 
+    var allCatatanData: GetAllCatatanRespone by mutableStateOf(
+        GetAllCatatanRespone(data = listOf())
+    )
+
+    var dataRekapRoom: RekapModelEntity by mutableStateOf(RekapModelEntity())
+
+    private val _rekapRoomList = MutableStateFlow<List<RekapModelEntity>>(emptyList())
+    val noteList = _rekapRoomList.asStateFlow()
+
+    init {
+        getAllRekapRoom()
+    }
 
     fun setHari(hari: String) {
         pilihHari = hari
+    }
+
+    // REKAP DATANBASE ROOM
+    private fun getAllRekapRoom() = viewModelScope.launch(Dispatchers.IO) {
+        homeRepository.getAllRekapRoom().distinctUntilChanged().collect { listOfRekap ->
+            if (listOfRekap.isEmpty()) {
+                Log.d("getAllRekapRoom", "Empty List")
+            } else {
+                dataRekapRoom = listOfRekap.first()
+            }
+        }
+    }
+
+    fun addRekapRoom(data: RekapModelEntity) =
+        viewModelScope.launch { homeRepository.addRekapRoom(data) }
+
+    fun updateRekapRoom(data: RekapModelEntity) = viewModelScope.launch {
+        homeRepository.updateRekapRoom(data)
+    }
+
+    fun getRekapRoomById(id: String) = viewModelScope.launch {
+        val data = homeRepository.getRekapRoomById(id)
+//        dataRekapRoom = data
     }
 
     fun getDataUser(headers: Map<String, String>) {
@@ -105,8 +151,7 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
     }
 
     fun hitungHba1c(
-        data: DataHba1cModel,
-        headers: Map<String, String>
+        data: DataHba1cModel, headers: Map<String, String>
     ) {
         viewModelScope.launch {
             isLoading = true
@@ -180,8 +225,7 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
     }
 
     fun hitungGulaDarah(
-        data: DataGulaDarahModel,
-        headers: Map<String, String>
+        data: DataGulaDarahModel, headers: Map<String, String>
     ) {
         viewModelScope.launch {
             isLoading = true
@@ -189,6 +233,7 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
                 when (val response = homeRepository.hitungGulaDarah(data, headers)) {
                     is Resource.Success -> {
                         getAllGulaDarah(headers)
+                        getTodayGulaDarah(headers)
                     }
                     is Resource.Error -> {
                         Log.d("Error", "${response.message}")
@@ -256,8 +301,7 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
     }
 
     fun hitungKolesterol(
-        data: DataKolesterolModel,
-        headers: Map<String, String>
+        data: DataKolesterolModel, headers: Map<String, String>
     ) {
         viewModelScope.launch {
             isLoading = true
@@ -265,6 +309,7 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
                 when (val response = homeRepository.hitungKolestertol(data, headers)) {
                     is Resource.Success -> {
                         getAllKolesterol(headers)
+                        getTodayKolesterol(headers)
                     }
                     is Resource.Error -> {
                         Log.d("Error", "${response.message}")
@@ -332,8 +377,7 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
 
 
     fun hitungTekananDarah(
-        data: DataTekananDarahModel,
-        headers: Map<String, String>
+        data: DataTekananDarahModel, headers: Map<String, String>
     ) {
         viewModelScope.launch {
             isLoading = true
@@ -342,6 +386,59 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
                     is Resource.Success -> {
                         Log.d("Tekanan darah", "${response.data?.data}")
                         getAllTekananDarah(headers)
+                        getTodayTekananDarah(headers)
+                    }
+                    is Resource.Error -> {
+                        Log.d("Error", "${response.message}")
+                    }
+                    else -> {
+                        Log.d("Data", "$response")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("Error Catch", "$e")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    // CATATAN
+    fun getAllCatatan(headers: Map<String, String>) {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                when (val response = homeRepository.getAllCatatan(headers, pilihHari)) {
+                    is Resource.Success -> {
+                        allCatatanData = response.data!!
+                    }
+                    is Resource.Error -> {
+                        Log.d("allCatatanData", "${response.message}")
+                    }
+                    else -> {
+                        Log.d("allCatatanData", "$response")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("allCatatanData Catch", "$e")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun tambahCatatan(
+        data: DataCatatanModel, headers: Map<String, String>, context: Context
+    ) {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                when (val response = homeRepository.tambahCatatan(data, headers)) {
+                    is Resource.Success -> {
+                        Toast.makeText(
+                            context, "Berhasil membuat catatan", Toast.LENGTH_SHORT
+                        ).show()
+                        getAllCatatan(headers)
                     }
                     is Resource.Error -> {
                         Log.d("Error", "${response.message}")
@@ -359,4 +456,33 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
     }
 
 
+    // DIARY REKAP
+    fun tambahDiaryRekap(
+        data: DataDiaryModel, headers: Map<String, String>, context: Context, navigate: () -> Unit
+    ) {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                when (val response = homeRepository.tambahDiaryRekap(data, headers)) {
+                    is Resource.Success -> {
+                        Toast.makeText(
+                            context, "Berhasil membuat catatan", Toast.LENGTH_SHORT
+                        ).show()
+                        delay(1000L)
+                        navigate()
+                    }
+                    is Resource.Error -> {
+                        Log.d("Error", "${response.message}")
+                    }
+                    else -> {
+                        Log.d("Data", "$response")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("Error Catch", "$e")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 }

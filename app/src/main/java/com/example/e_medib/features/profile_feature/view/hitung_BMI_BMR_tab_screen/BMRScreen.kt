@@ -153,7 +153,7 @@ fun BMRScreen(profileViewModel: ProfileViewModel = hiltViewModel()) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // TB
+            // JENIS KELAMIN
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.Start,

@@ -1,4 +1,4 @@
-package com.example.e_medib.features.auth_feature.model.response
+package com.example.e_medib.features.auth_feature.model.response.loginResponse
 
 data class LoginResponse(
     val berat_badan: Any?,

@@ -41,8 +41,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dokar.sheets.BottomSheet
-import com.example.e_medib.features.aktivitas_feature.view.CustomAktivitasCard
 import com.example.e_medib.features.home_feature.model.gulaDarah.DataGulaDarahModel
 import com.example.e_medib.features.home_feature.model.hba1c.DataHba1cModel
 import com.example.e_medib.features.home_feature.model.kolesterol.DataKolesterolModel

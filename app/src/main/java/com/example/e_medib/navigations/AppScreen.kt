@@ -11,8 +11,8 @@ sealed class AppScreen(var title: String, var icon: ImageVector?, var screen_rou
     // BOTTOM NAVIGATION
     object Beranda : AppScreen("Beranda", Icons.Rounded.Home, "Beranda")
     object PantauKalori : AppScreen("Pantau Kalori", Icons.Rounded.ReceiptLong, "PantauKalori")
-    object PilihAktivitasScreen :
-        AppScreen("Pilih Aktivitas", Icons.Rounded.DirectionsBike, "PilihAktivitasScreen")
+    object PilihKategoriAktivitasScreen :
+        AppScreen("Aktivitas", Icons.Rounded.DirectionsBike, "PilihKategoriAktivitasScreen")
 
     object Profil : AppScreen("Profil", Icons.Rounded.Person, "Profil")
 
@@ -23,11 +23,9 @@ sealed class AppScreen(var title: String, var icon: ImageVector?, var screen_rou
     object SearchMenuScreen : AppScreen("SearchMenuScreen", null, "SearchMenuScreen")
     object HitungBMIScreen : AppScreen("HitungBMIScreen", null, "HitungBMIScreen")
     object DowwnloadRekapScreen : AppScreen("DowwnloadRekapScreen", null, "DowwnloadRekapScreen")
-
-
-    object Aktivitas : AppScreen("Aktivitas", null, "Aktivitas")
+    object DaftarAktivitasScreen : AppScreen("DaftarAktivitasScreen", null, "DaftarAktivitasScreen")
+    object AktivitasPenggunaScreen : AppScreen("AktivitasPenggunaScreen", null, "AktivitasPenggunaScreen")
     object MainScreen : AppScreen("MainScreen", null, "MainScreen")
 
-    object DetailAktivitasScreen : AppScreen("DetailAktivitasScreen", null, "DetailAktivitasScreen")
 
 }

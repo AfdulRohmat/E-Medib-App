@@ -4,6 +4,7 @@ import CustomBottomSheet
 import CustomExpandedCard
 import CustomInputField
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.e_medib.R
+import com.example.e_medib.features.home_feature.view_model.HomeViewModel
 import com.example.e_medib.features.pantau_kalori_feature.model.DataKonsumsiMakananModel
 import com.example.e_medib.features.pantau_kalori_feature.view_model.PantauKaloriViewModel
 import com.example.e_medib.features.profile_feature.view_model.ProfileViewModel
@@ -51,7 +53,8 @@ import java.time.LocalDate
 fun PantauKaloriScreen(
     navController: NavController,
     pantauKaloriViewModel: PantauKaloriViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
 ) {
     val datePickerState = rememberDatePickerState(initialDate = LocalDate.now())
     val pilihHari = rememberSaveable() { mutableStateOf("${LocalDate.now()}") }
@@ -95,8 +98,7 @@ fun PantauKaloriScreen(
                     fontWeight = FontWeight.SemiBold,
                     color = mWhite
                 )
-            },
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = mRedMain)
+            }, colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = mRedMain)
         )
     }) {
         // CARD KONSUMSI
@@ -678,9 +680,33 @@ fun PantauKaloriScreen(
                                         color = mBlack
                                     )
                                 }
+
+                                Button(
+                                    onClick = {
+
+                                    },
+                                    modifier = Modifier
+                                        .padding(top = 24.dp)
+                                        .fillMaxWidth()
+                                        .height(56.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = mRedMain,
+                                        contentColor = mWhite,
+                                        disabledBackgroundColor = mLightGrayScale,
+                                        disabledContentColor = mBlack
+                                    ),
+                                    shape = RoundedCornerShape(32.dp),
+                                ) {
+                                    Text(
+                                        text = "Tambah ke Diary",
+                                        style = MaterialTheme.typography.body1,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = mWhite
+                                    )
+                                }
                             }
                         },
-                        body = { },
+                        body = {},
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                 }
@@ -761,16 +787,10 @@ fun ShowCustomBottomSheet(
         textFieldTitle = "Data konsumsi Makanan",
         onClick = {
             val konsumsiMakananData = DataKonsumsiMakananModel(
-                makanan = makanan.value,
-                porsi = porsi.value,
-                kalori = kalori.value,
-                jenisWaktuMakan
+                makanan = makanan.value, porsi = porsi.value, kalori = kalori.value, jenisWaktuMakan
             )
             pantauKaloriViewModel.tambahKonsumsiMakanan(
-                waktuMakan = jenisWaktuMakan,
-                tanggal = pilihHari,
-                konsumsiMakananData,
-                headerMap
+                waktuMakan = jenisWaktuMakan, tanggal = pilihHari, konsumsiMakananData, headerMap
             )
             makanan.value = ""
             porsi.value = ""

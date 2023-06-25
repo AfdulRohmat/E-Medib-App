@@ -13,6 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -189,7 +190,7 @@ fun BMIScreen(profileViewModel: ProfileViewModel = hiltViewModel()) {
             body = {
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
                     val colorByStatus =
-                        if (profileViewModel.recentBMIData.status == "Normal") mGreen else if (profileViewModel.recentBMIData.status == "Underweight" || profileViewModel.recentBMIData.status == "Overweight") mYellow else mRedMain
+                        if (profileViewModel.recentBMIData.status == "Normal") mGreen else if (profileViewModel.recentBMIData.status == "Underweight") mBlue else if (profileViewModel.recentBMIData.status == "Overweight") mYellow else mRedMain
 
                     Text(
                         text = "${profileViewModel.recentBMIData.bmi} kg/m2", // ini aslinya field bmi

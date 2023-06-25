@@ -68,11 +68,12 @@ fun HomeScreen(
         homeViewModel.getAllGulaDarah(headerMap)
         homeViewModel.getAllKolesterol(headerMap)
         homeViewModel.getAllTekananDarah(headerMap)
+        homeViewModel.getAllCatatan(headerMap)
         profileViewModel.getAllBMI(headerMap)
         profileViewModel.getAllBMR(headerMap)
     })
 
-    if (homeViewModel.isLoading && profileViewModel.isLoading) {
+    if (homeViewModel.isLoading || profileViewModel.isLoading) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()

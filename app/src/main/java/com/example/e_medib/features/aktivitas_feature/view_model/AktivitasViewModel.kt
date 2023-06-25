@@ -9,29 +9,44 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.e_medib.data.Resource
-import com.example.e_medib.features.aktivitas_feature.model.DataUbahDurasiAktivitasModel
-import com.example.e_medib.features.aktivitas_feature.model.getAll.GetAllAktivitasResponse
+import com.example.e_medib.features.aktivitas_feature.model.DataCreateAktivitasPenggunaModel
+import com.example.e_medib.features.aktivitas_feature.model.DataUpdateAktivitasPenggunaModel
+import com.example.e_medib.features.aktivitas_feature.model.response.getAllAktivitasPengguna.GetAllAktivitasPenggunaResponse
+import com.example.e_medib.features.aktivitas_feature.model.response.getAllDaftarAktivitas.GetAllDaftarAktivitasResponse
 import com.example.e_medib.features.aktivitas_feature.repository.AktivitasRepository
+import com.example.e_medib.features.home_feature.view_model.HomeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class AktivitasViewModel @Inject constructor(
     private val aktivitasRepository: AktivitasRepository
 ) : ViewModel() {
-    var isAktivitasLoading: Boolean by mutableStateOf(false)
-    var dataAllAktivitas: GetAllAktivitasResponse? by mutableStateOf(
-        GetAllAktivitasResponse(data = emptyList())
+    var isLoading: Boolean by mutableStateOf(false)
+    var isLoadingDelete: Boolean by mutableStateOf(false)
+    var pilihHari by mutableStateOf("")
+
+    var dataAllAktivitas: GetAllDaftarAktivitasResponse? by mutableStateOf(
+        GetAllDaftarAktivitasResponse(data = emptyList())
     )
+    var dataAllAktivitasPengguna: GetAllAktivitasPenggunaResponse? by mutableStateOf(
+        GetAllAktivitasPenggunaResponse(data = emptyList())
+    )
+
+    fun setHari(hari: String) {
+        pilihHari = hari
+    }
 
     fun getAllAktivitas(headers: Map<String, String>, tingkatAktivitas: String) {
         viewModelScope.launch {
-            isAktivitasLoading = true
+            isLoading = true
 
             try {
                 when (val response =
-                    aktivitasRepository.getAllAktivitas(headers, tingkatAktivitas)) {
+                    aktivitasRepository.getDaftarAktivitas(headers, tingkatAktivitas)) {
                     is Resource.Success -> {
                         dataAllAktivitas = response.data!!
                     }
@@ -46,77 +61,143 @@ class AktivitasViewModel @Inject constructor(
                 Log.d("dataAllAktivitas", "$e")
 
             } finally {
-                isAktivitasLoading = false
+                isLoading = false
             }
         }
     }
 
-    fun ubahDurasiAktivitas(
-        id: String,
-        data: DataUbahDurasiAktivitasModel,
-        headers: Map<String, String>,
-        tingkatAktivitas: String,
-        context: Context
-    ) {
+    // ============ AKTIVITAS PENGGUNA ===============
+    // get All aktivitas Pengguna
+    fun getAllAktivitasPengguna(headers: Map<String, String>, tingkatAktivitas: String) {
         viewModelScope.launch {
-            isAktivitasLoading = true
+            isLoading = true
 
             try {
-                when (val response =
-                    aktivitasRepository.ubahDurasiAktivitas(id, data, headers)) {
+                when (val response = aktivitasRepository.getAllAktivitasPengguna(
+                    headers, tingkatAktivitas, pilihHari
+                )) {
                     is Resource.Success -> {
-                        Toast.makeText(
-                            context, "Berhasil menambah durasi",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        getAllAktivitas(headers, tingkatAktivitas)
+                        dataAllAktivitasPengguna = response.data!!
                     }
                     is Resource.Error -> {
-                        Log.d("updateAktivitas", "${response.data}")
+                        Log.d("dataAllAktivitasPengguna", "${response.message}")
                     }
                     else -> {
-                        Log.d("updateAktivitas", "$response")
+                        Log.d("dataAllAktivitasPengguna", "$response")
                     }
                 }
             } catch (e: Exception) {
-                Log.d("updateAktivitas", "$e")
+                Log.d("dataAllAktivitasPengguna", "$e")
 
             } finally {
-                isAktivitasLoading = false
+                isLoading = false
             }
         }
     }
 
-    fun resetAllAktivitas(
+
+    // tambahl aktivitas Pengguna
+    fun tambahAktivitasPenggun(
         headers: Map<String, String>,
-        tingkatAktivitas: String,
-        context: Context
+        data: DataCreateAktivitasPenggunaModel,
+        context: Context,
+        navigate: () -> Unit
     ) {
         viewModelScope.launch {
-            isAktivitasLoading = true
-
+            isLoading = true
             try {
-                when (val response =
-                    aktivitasRepository.resetAllAktivitas(headers)) {
+                when (val response = aktivitasRepository.tabmbahAktivitasPengguna(
+                    headers,
+                    data,
+                )) {
                     is Resource.Success -> {
                         Toast.makeText(
-                            context, "Berhasil mereset data aktivitas",
-                            Toast.LENGTH_SHORT
+                            context, "Berhasil menambahkan data", Toast.LENGTH_SHORT
                         ).show()
-                        getAllAktivitas(headers, tingkatAktivitas)
+
+                        delay(1000L)
+                        navigate()
                     }
                     is Resource.Error -> {
-                        Log.d("mereset", "${response.message}")
+                        Log.d("tabmbahAktivitasPengguna", "${response.message}")
                     }
                     else -> {
-                        Log.d("mereset", "$response")
+                        Log.d("tabmbahAktivitasPengguna", "$response")
                     }
                 }
             } catch (e: Exception) {
-                Log.d("mereset", "$e")
+                Log.d("tabmbahAktivitasPengguna", "$e")
 
             } finally {
-                isAktivitasLoading = false
+                isLoading = false
+            }
+        }
+    }
+
+    // Update aktivitas Pengguna
+    fun editAktivitasPengguna(
+        headers: Map<String, String>,
+        id: Int,
+        data: DataUpdateAktivitasPenggunaModel,
+        tingkatAktivitas: String,
+        context: Context,
+    ) {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                when (val response = aktivitasRepository.editAktivitasPengguna(headers, id, data)) {
+                    is Resource.Success -> {
+                        Toast.makeText(
+                            context, "Berhasil mengubah data", Toast.LENGTH_SHORT
+                        ).show()
+                        getAllAktivitasPengguna(headers, tingkatAktivitas)
+                    }
+                    is Resource.Error -> {
+                        Log.d("tabmbahAktivitasPengguna", "${response.message}")
+                    }
+                    else -> {
+                        Log.d("tabmbahAktivitasPengguna", "$response")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("tabmbahAktivitasPengguna", "$e")
+
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+
+    // delete aktivitas Pengguna
+    fun deleteAktivitasPengguna(
+        headers: Map<String, String>,
+        id: Int,
+        tingkatAktivitas: String,
+        context: Context,
+    ) {
+        viewModelScope.launch {
+            isLoadingDelete = true
+            try {
+                when (val response = aktivitasRepository.deleteAktivitasPengguna(headers, id)) {
+                    is Resource.Success -> {
+                        Toast.makeText(
+                            context, "Berhasil menghapus data", Toast.LENGTH_SHORT
+                        ).show()
+                        getAllAktivitasPengguna(headers, tingkatAktivitas)
+                    }
+                    is Resource.Error -> {
+                        Log.d("deleteAktivitasPengguna", "${response.message}")
+                    }
+                    else -> {
+                        Log.d("deleteAktivitasPengguna", "$response")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("deleteAktivitasPengguna", "$e")
+
+            } finally {
+                isLoadingDelete = false
             }
         }
     }

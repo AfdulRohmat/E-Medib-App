@@ -1,6 +1,6 @@
-package com.example.e_medib.features.aktivitas_feature.model.getAll
+package com.example.e_medib.features.aktivitas_feature.model.response.getAllDaftarAktivitas
 
-data class AktivitasResponse(
+data class DaftarAktivitasResponse(
     val created_at: Any,
     val deleted_at: Any,
     val durasi: String,

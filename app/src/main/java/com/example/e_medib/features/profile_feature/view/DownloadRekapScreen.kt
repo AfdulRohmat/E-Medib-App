@@ -13,15 +13,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.e_medib.features.profile_feature.view_model.ProfileViewModel
 import com.example.e_medib.navigations.DownloadRekapScreenTabItem
 import com.example.e_medib.ui.theme.*
+import com.example.e_medib.utils.CustomDataStore
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -30,7 +34,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun DowwnloadRekapScreen(navController: NavController) {
+fun DowwnloadRekapScreen(
+    navController: NavController,
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+) {
 
 
     val tabRowItems = listOf(
@@ -42,6 +49,10 @@ fun DowwnloadRekapScreen(navController: NavController) {
 
     val pagerState = rememberPagerState(initialPage = 0)
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit, block = {
+
+    })
 
     Scaffold(
         topBar = {
@@ -57,7 +68,7 @@ fun DowwnloadRekapScreen(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                          navController.popBackStack()
+                        navController.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,

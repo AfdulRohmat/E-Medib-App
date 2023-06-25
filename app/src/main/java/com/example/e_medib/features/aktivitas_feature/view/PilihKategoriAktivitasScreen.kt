@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,7 +31,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PilihAktivitasScreen(navController: NavController) {
+fun PilihKategoryAktivitasScreen(navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -63,7 +62,7 @@ fun PilihAktivitasScreen(navController: NavController) {
                 caption = "Aktivitas fisik ini hanya memerlukan sedikit tenaga dan biasanya tidak menyebabkan perubahan dalam pernapasan, saat melakukan aktivitas masih dapat berbicara dan bernyanyi",
                 color = mGreen,
                 onClick = {
-                    navController.navigate(AppScreen.Aktivitas.screen_route + "/RINGAN")
+                    navController.navigate(AppScreen.AktivitasPenggunaScreen.screen_route + "/RINGAN")
                 },
             )
             CustomPilihAktivitasCard(
@@ -72,7 +71,7 @@ fun PilihAktivitasScreen(navController: NavController) {
                 caption = "Aktivitas fisik sedang adalah aktivitas fisik dengan kebutuhan kalori sebesar 3,5 - 7 Kcal/menit. Saat menjalankan aktivitas fisik sedang, tubuh akan sedikit berkeringat, ritme napas lebih cepat, dan denyut jantung sedikit lebih kuat",
                 color = mYellow,
                 onClick = {
-                    navController.navigate(AppScreen.Aktivitas.screen_route + "/SEDANG")
+                    navController.navigate(AppScreen.AktivitasPenggunaScreen.screen_route + "/SEDANG")
                 },
             )
             CustomPilihAktivitasCard(
@@ -81,7 +80,7 @@ fun PilihAktivitasScreen(navController: NavController) {
                 caption = "Aktivitas fisik dikategorikan berat apabila selama beraktivitas tubuh mengeluarkan banyak berkeringat, denyut jantung dan frekuensi nafas sangat meningkat sampai dengan kehabisan napas.Energi yang dikeluarkan saat melakukan aktivitas pada kategori ini > 7 Kcal/menit.",
                 color = mRedMain,
                 onClick = {
-                    navController.navigate(AppScreen.Aktivitas.screen_route + "/BERAT")
+                    navController.navigate(AppScreen.AktivitasPenggunaScreen.screen_route + "/BERAT")
                 },
             )
 

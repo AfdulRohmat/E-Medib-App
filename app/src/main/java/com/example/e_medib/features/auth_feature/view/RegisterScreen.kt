@@ -1,6 +1,9 @@
 package com.example.e_medib.features.auth_feature.view
 
 import CustomInputField
+import android.app.DatePickerDialog
+import android.widget.DatePicker
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,10 +11,16 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +28,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -28,16 +41,99 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.e_medib.features.aktivitas_feature.view.DetailAktivitasScreen
+import com.example.e_medib.features.auth_feature.model.DataRegisterModel
 import com.example.e_medib.features.auth_feature.view.components.CustomLoginInputField
+import com.example.e_medib.features.auth_feature.view_model.AuthViewModel
+import com.example.e_medib.features.profile_feature.model.bmrModel.DataBMRModel
+import com.example.e_medib.features.profile_feature.view_model.ProfileViewModel
 import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
+import java.time.LocalDate
+import java.util.*
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel()
+) {
+    val mContext = LocalContext.current
+    val mTextFieldSize = remember { mutableStateOf(Size.Zero) }
+    val mCalendar = Calendar.getInstance()
+    val mYear: Int
+    val mMonth: Int
+    val mDay: Int
+
+    mYear = mCalendar.get(Calendar.YEAR)
+    mMonth = mCalendar.get(Calendar.MONTH)
+    mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+
+    mCalendar.time = Date()
+
+
+    var showDatePicker = mutableStateOf(false)
+
+    val jenisKelamin = listOf("Laki-laki", "Perempuan")
+    val jenisKelaminExpand = remember { mutableStateOf(false) }
+
+    val namaLengkap = rememberSaveable() { mutableStateOf("") }
+    val username = rememberSaveable() { mutableStateOf("") }
+    val nik = rememberSaveable() { mutableStateOf("") }
+    val email = rememberSaveable() { mutableStateOf("") }
+    val tanggalLahir = rememberSaveable() { mutableStateOf("") }
+    val selectedJenisKelamin = rememberSaveable() { mutableStateOf("") }
+    val usia = rememberSaveable() { mutableStateOf("") }
+    val tinggiBadan = rememberSaveable() { mutableStateOf("") }
+    val beratBadan = rememberSaveable() { mutableStateOf("") }
+    val password = rememberSaveable() { mutableStateOf("") }
+    val repeatPassword = rememberSaveable() { mutableStateOf("") }
+    val showPassword = rememberSaveable() { mutableStateOf(false) }
+    val showRepeatPassword = rememberSaveable() { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val isValidInputs =
+        remember(
+            namaLengkap.value,
+            username.value,
+            nik.value,
+            email.value,
+            tanggalLahir.value,
+            selectedJenisKelamin.value,
+            usia.value,
+            tinggiBadan.value,
+            beratBadan.value,
+            password.value,
+            repeatPassword.value,
+        ) {
+            namaLengkap.value.trim().isNotEmpty() && username.value.trim()
+                .isNotEmpty() && nik.value.trim().isNotEmpty() && email.value.trim()
+                .isNotEmpty() && tanggalLahir.value.trim()
+                .isNotEmpty() && selectedJenisKelamin.value.trim()
+                .isNotEmpty() && usia.value.trim()
+                .isNotEmpty() && tinggiBadan.value.trim()
+                .isNotEmpty() && beratBadan.value.trim()
+                .isNotEmpty() && password.value.trim()
+                .isNotEmpty() && repeatPassword.value.trim()
+                .isNotEmpty() && password.value == repeatPassword.value
+        }
+
+    val mDatePickerDialog = DatePickerDialog(
+        mContext,
+        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+            tanggalLahir.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
+        }, mYear, mMonth, mDay
+    )
+
+    val icon = if (jenisKelaminExpand.value)
+        Icons.Filled.KeyboardArrowUp
+    else
+        Icons.Filled.KeyboardArrowDown
+
+
     Scaffold() {
         Column(
             modifier = Modifier
@@ -47,49 +143,6 @@ fun RegisterScreen(navController: NavController) {
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-            val namaLengkap = rememberSaveable() { mutableStateOf("") }
-            val username = rememberSaveable() { mutableStateOf("") }
-            val nik = rememberSaveable() { mutableStateOf("") }
-            val email = rememberSaveable() { mutableStateOf("") }
-            val tempatTanggalLahir = rememberSaveable() { mutableStateOf("") }
-            val jenisKelamin = rememberSaveable() { mutableStateOf("") }
-            val tinggiBadan = rememberSaveable() { mutableStateOf("") }
-            val beratBadan = rememberSaveable() { mutableStateOf("") }
-            val jenisAlergi = rememberSaveable() { mutableStateOf("") }
-            val riwayatPenyakit = rememberSaveable() { mutableStateOf("") }
-            val password = rememberSaveable() { mutableStateOf("") }
-            val repeatPassword = rememberSaveable() { mutableStateOf("") }
-
-            val showPassword = rememberSaveable() { mutableStateOf(false) }
-            val showRepeatPassword = rememberSaveable() { mutableStateOf(false) }
-            val isLoading = remember() { mutableStateOf(false) }
-            val keyboardController = LocalSoftwareKeyboardController.current
-            val isValidInputs =
-                remember(
-                    namaLengkap.value,
-                    username.value,
-                    nik.value,
-                    email.value,
-                    tempatTanggalLahir.value,
-                    jenisKelamin.value,
-                    tinggiBadan.value,
-                    beratBadan.value,
-                    jenisAlergi.value,
-                    riwayatPenyakit.value,
-                    password.value,
-                    repeatPassword.value,
-                    ) {
-                    namaLengkap.value.trim().isNotEmpty() && username.value.trim()
-                        .isNotEmpty() && nik.value.trim().isNotEmpty() && email.value.trim()
-                        .isNotEmpty() && tempatTanggalLahir.value.trim()
-                        .isNotEmpty() && jenisKelamin.value.trim()
-                        .isNotEmpty() && tinggiBadan.value.trim()
-                        .isNotEmpty() && beratBadan.value.trim()
-                        .isNotEmpty() && jenisAlergi.value.trim()
-                        .isNotEmpty() && riwayatPenyakit.value.trim()
-                        .isNotEmpty() && password.value.trim()
-                        .isNotEmpty() && repeatPassword.value.trim().isNotEmpty()
-                }
 
 
             // TITLE
@@ -203,19 +256,37 @@ fun RegisterScreen(navController: NavController) {
                 textAlign = TextAlign.Start,
                 color = mBlack
             )
-            CustomInputField(
-                valueState = tempatTanggalLahir,
-                placeholder = "12/12/2000",
+            OutlinedTextField(
+                value = tanggalLahir.value,
+                onValueChange = { tanggalLahir.value = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                        mTextFieldSize.value = coordinates.size.toSize()
+                    },
+                placeholder = {
+                    Text(
+                        text = "12/01/2001",
+                    )
+                },
                 trailingIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        mDatePickerDialog.show()
+                    }) {
                         Icon(
                             imageVector = Icons.Outlined.CalendarMonth,
                             contentDescription = "CalendarMonth"
                         )
                     }
                 },
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next,
+                readOnly = true,
+                shape = RoundedCornerShape(10.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = mWhite,
+                    textColor = mBlack,
+                    unfocusedBorderColor = mLightGrayScale,
+                    focusedBorderColor = mLightGrayScale
+                ),
             )
 
             // JENIS KELAMIN
@@ -229,21 +300,85 @@ fun RegisterScreen(navController: NavController) {
                 textAlign = TextAlign.Start,
                 color = mBlack
             )
-            CustomInputField(
-                valueState = jenisKelamin,
-                placeholder = "Jenis Kelamin",
+            OutlinedTextField(
+                value = selectedJenisKelamin.value,
+                onValueChange = { selectedJenisKelamin.value = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                        mTextFieldSize.value = coordinates.size.toSize()
+                    },
+                placeholder = {
+                    Text(
+                        text = "Jenis Kelamin",
+                        style = MaterialTheme.typography.body1,
+//                            modifier = Modifier.padding(6.dp),
+                        textAlign = TextAlign.Start,
+                        fontWeight = FontWeight.Normal,
+                        color = mGrayScale
+                    )
+                },
                 trailingIcon = {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Outlined.ExpandMore,
-                            contentDescription = "ExpandMore"
+                    Icon(
+                        icon,
+                        "contentDescription",
+                        tint = mGrayScale,
+                        modifier = Modifier.clickable {
+                            jenisKelaminExpand.value = !jenisKelaminExpand.value
+                        },
+                    )
+                },
+                readOnly = true,
+                shape = RoundedCornerShape(10.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = mWhite,
+                    textColor = mBlack,
+                    unfocusedBorderColor = mLightGrayScale,
+                    focusedBorderColor = mLightGrayScale
+                ),
+            )
+            DropdownMenu(
+                expanded = jenisKelaminExpand.value,
+                onDismissRequest = { jenisKelaminExpand.value = false },
+                modifier = Modifier
+                    .width(with(LocalDensity.current) { mTextFieldSize.value.width.toDp() })
+            ) {
+                jenisKelamin.forEach { label ->
+                    DropdownMenuItem(onClick = {
+                        selectedJenisKelamin.value = label
+                        jenisKelaminExpand.value = false
+                    }) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.body1,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            color = mGrayScale
                         )
                     }
+                }
+            }
 
-                },
-                keyboardType = KeyboardType.Text,
+
+            // USIA
+            Text(
+                text = "Usia",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start,
+                color = mBlack
+            )
+            CustomInputField(
+                valueState = usia,
+                placeholder = "20 Tahun",
+                trailingIcon = null,
+                keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next,
             )
+
 
             // TINGGI BADAN && BERAT BADAN
             Row(
@@ -322,44 +457,6 @@ fun RegisterScreen(navController: NavController) {
 
             }
 
-            // JENIS ALERGI
-            Text(
-                text = "Jenis Alergi",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp, top = 16.dp),
-                style = MaterialTheme.typography.caption,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Start,
-                color = mBlack
-            )
-            CustomInputField(
-                valueState = jenisAlergi,
-                placeholder = "Jenis Alergi",
-                trailingIcon = null,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next,
-            )
-
-            // RIWAYAT PENYAKIT
-            Text(
-                text = "Riwayat Penyakit",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp, top = 16.dp),
-                style = MaterialTheme.typography.caption,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Start,
-                color = mBlack
-            )
-            CustomInputField(
-                valueState = riwayatPenyakit,
-                placeholder = "Riwayat Penyakit",
-                trailingIcon = null,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next,
-            )
-
             // PASSWORD
             Text(
                 text = "Password",
@@ -397,7 +494,7 @@ fun RegisterScreen(navController: NavController) {
                 passwordVisible = showRepeatPassword,
                 isPassword = true,
                 keyboardType = KeyboardType.Password,
-                visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (showRepeatPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
                 imeAction = ImeAction.Done,
                 label = "Ulangi Password",
             )
@@ -407,7 +504,23 @@ fun RegisterScreen(navController: NavController) {
             Button(
                 onClick = {
                     keyboardController?.hide()
-                    // navController.navigate(AppScreen.Beranda.screen_route)
+                    // api register
+                    val registerData = DataRegisterModel(
+                        namaLengkap.value,
+                        username.value,
+                        nik.value,
+                        email.value,
+                        tanggalLahir.value,
+                        if (selectedJenisKelamin.value == "Laki-laki") "L" else "P",
+                        usia.value,
+                        tinggiBadan.value,
+                        beratBadan.value,
+                        password.value
+                    )
+                    authViewModel.doRegister(registerData, context = mContext, navigate = {
+                        // Back to Login
+                        navController.popBackStack()
+                    })
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -419,7 +532,7 @@ fun RegisterScreen(navController: NavController) {
                     disabledContentColor = mBlack
                 ),
                 shape = RoundedCornerShape(32.dp),
-                enabled = !isLoading.value && isValidInputs
+                enabled = !authViewModel.isLoading && isValidInputs
             ) {
                 Text(
                     text = "Daftar",
@@ -452,6 +565,11 @@ fun RegisterScreen(navController: NavController) {
                     )
                 }
             }
+
+        }
+
+        // DATE PICKER
+        if (showDatePicker.value) {
 
         }
     }

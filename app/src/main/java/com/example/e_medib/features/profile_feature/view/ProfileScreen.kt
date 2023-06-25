@@ -196,8 +196,11 @@ fun ProfileScreen(
 
     if (showLogoutDialog) {
         LogoutDialog(onDismiss = { showLogoutDialog = !showLogoutDialog }, onLogout = {
+            val headerMap = mutableMapOf<String, String>()
+            headerMap["Accept"] = "application/json"
+            headerMap["Authorization"] = "Bearer ${tokenText.value}"
             showLogoutDialog = !showLogoutDialog
-            profileViewModel.doLogout(context, navigate = {
+            profileViewModel.doLogout(headerMap, context, navigate = {
                 // CLEAR ALL SCREEN THEN GO TO SPLASHSCREEN
                 navController.navigate(AppScreen.SplashScreen.screen_route) {
                     popUpTo(navController.graph.id) {
