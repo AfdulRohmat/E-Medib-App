@@ -14,11 +14,12 @@ import com.example.e_medib.features.aktivitas_feature.model.DataUpdateAktivitasP
 import com.example.e_medib.features.aktivitas_feature.model.response.getAllAktivitasPengguna.GetAllAktivitasPenggunaResponse
 import com.example.e_medib.features.aktivitas_feature.model.response.getAllDaftarAktivitas.GetAllDaftarAktivitasResponse
 import com.example.e_medib.features.aktivitas_feature.repository.AktivitasRepository
-import com.example.e_medib.features.home_feature.view_model.HomeViewModel
+import com.example.e_medib.utils.CustomDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,6 +34,10 @@ class AktivitasViewModel @Inject constructor(
         GetAllDaftarAktivitasResponse(data = emptyList())
     )
     var dataAllAktivitasPengguna: GetAllAktivitasPenggunaResponse? by mutableStateOf(
+        GetAllAktivitasPenggunaResponse(data = emptyList())
+    )
+
+    var dataTotalKaloridanDurasi: GetAllAktivitasPenggunaResponse? by mutableStateOf(
         GetAllAktivitasPenggunaResponse(data = emptyList())
     )
 
@@ -67,6 +72,34 @@ class AktivitasViewModel @Inject constructor(
     }
 
     // ============ AKTIVITAS PENGGUNA ===============
+    // get data durasi dan kalori
+    fun getDataAktivitasPengguna(headers: Map<String, String>) {
+        viewModelScope.launch {
+            isLoading = true
+
+            try {
+                when (val response = aktivitasRepository.getAllAktivitasPengguna(
+                    headers = headers, tanggal = pilihHari
+                )) {
+                    is Resource.Success -> {
+                        dataTotalKaloridanDurasi = response.data!!
+                    }
+                    is Resource.Error -> {
+                        Log.d("dataAllAktivitasPengguna", "${response.message}")
+                    }
+                    else -> {
+                        Log.d("dataAllAktivitasPengguna", "$response")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("dataAllAktivitasPengguna", "$e")
+
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
     // get All aktivitas Pengguna
     fun getAllAktivitasPengguna(headers: Map<String, String>, tingkatAktivitas: String) {
         viewModelScope.launch {
@@ -97,7 +130,7 @@ class AktivitasViewModel @Inject constructor(
 
 
     // tambahl aktivitas Pengguna
-    fun tambahAktivitasPenggun(
+    fun tambahAktivitasPengguna(
         headers: Map<String, String>,
         data: DataCreateAktivitasPenggunaModel,
         context: Context,
@@ -199,6 +232,19 @@ class AktivitasViewModel @Inject constructor(
             } finally {
                 isLoadingDelete = false
             }
+        }
+    }
+
+    fun addKaloriAktivitasToDiary(totalKalori: String, context: Context) {
+        viewModelScope.launch {
+            val localStorage = CustomDataStore(context)
+            CoroutineScope(Dispatchers.IO).launch {
+                localStorage.saveTotalKaloriAktivitas("$totalKalori Cal")
+            }
+            Toast.makeText(
+                context, "Berhasil menambahkan data",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }

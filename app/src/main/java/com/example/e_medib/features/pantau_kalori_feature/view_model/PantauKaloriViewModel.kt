@@ -1,6 +1,8 @@
 package com.example.e_medib.features.pantau_kalori_feature.view_model
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,7 +12,10 @@ import com.example.e_medib.data.Resource
 import com.example.e_medib.features.pantau_kalori_feature.model.DataKonsumsiMakananModel
 import com.example.e_medib.features.pantau_kalori_feature.model.getAll.GetAllKonsumsiMakananResponse
 import com.example.e_medib.features.pantau_kalori_feature.repository.PantauKaloriRepository
+import com.example.e_medib.utils.CustomDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -170,4 +175,17 @@ class PantauKaloriViewModel @Inject constructor(private val pantauKaloriReposito
     }
 
 
+    fun addKaloriKonsumiToDiary(totalKalori: String, context: Context) {
+        viewModelScope.launch {
+            val localStorage = CustomDataStore(context)
+            CoroutineScope(Dispatchers.IO).launch {
+                localStorage.saveTotalKonsumsiKalori("$totalKalori Cal")
+            }
+            Toast.makeText(
+                context, "Berhasil menambahkan data",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+    }
 }

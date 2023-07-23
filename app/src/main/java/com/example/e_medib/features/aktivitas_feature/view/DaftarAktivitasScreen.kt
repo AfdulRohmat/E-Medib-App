@@ -3,18 +3,14 @@ package com.example.e_medib.features.aktivitas_feature.view
 import CustomBottomSheet
 import CustomInputField
 import android.util.Log
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
@@ -32,15 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.e_medib.features.aktivitas_feature.model.DataCreateAktivitasPenggunaModel
-import com.example.e_medib.features.aktivitas_feature.view.component.CustomAktivitasCard
 import com.example.e_medib.features.aktivitas_feature.view_model.AktivitasViewModel
-import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
 import com.example.e_medib.utils.CustomDataStore
-import com.foreverrafs.datepicker.DatePickerTimeline
-import com.foreverrafs.datepicker.state.rememberDatePickerState
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -223,7 +214,7 @@ fun DaftarAktivitasScreen(
                     )
 
                     // Tambah akticitas
-                    aktivitasViewModel.tambahAktivitasPenggun(
+                    aktivitasViewModel.tambahAktivitasPengguna(
                         headerMap,
                         dataCreateAktivitasPenggunaModel,
                         context = context, navigate = {

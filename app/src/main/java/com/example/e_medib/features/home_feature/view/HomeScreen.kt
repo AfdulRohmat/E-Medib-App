@@ -60,15 +60,16 @@ fun HomeScreen(
         val headerMap = mutableMapOf<String, String>()
         headerMap["Accept"] = "application/json"
         headerMap["Authorization"] = "Bearer ${tokenText.value}"
-        homeViewModel.getTodayGulaDarah(headerMap)
+
+        homeViewModel.getTodayGulaDarah(headerMap, context)
         homeViewModel.getTodayTekananDarah(headerMap)
-        homeViewModel.getTodayKolesterol(headerMap)
+        homeViewModel.getTodayKolesterol(headerMap, context)
         homeViewModel.getDataUser(headerMap)
         homeViewModel.getAllHba1c(headerMap)
         homeViewModel.getAllGulaDarah(headerMap)
         homeViewModel.getAllKolesterol(headerMap)
         homeViewModel.getAllTekananDarah(headerMap)
-        homeViewModel.getAllCatatan(headerMap)
+        homeViewModel.getAllCatatan(headerMap, context)
         profileViewModel.getAllBMI(headerMap)
         profileViewModel.getAllBMR(headerMap)
     })
@@ -272,6 +273,7 @@ fun HomeScreen(
                         homeViewModel.getAllGulaDarah(headerMap)
                         homeViewModel.getAllKolesterol(headerMap)
                         homeViewModel.getAllTekananDarah(headerMap)
+                        homeViewModel.getAllCatatan(headerMap, context)
                     },
                 )
 

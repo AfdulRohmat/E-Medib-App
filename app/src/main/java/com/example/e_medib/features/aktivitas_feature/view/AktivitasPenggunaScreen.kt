@@ -261,7 +261,7 @@ fun AktivitasPenggunaScreen(
                 // DATA
                 // Jumlah menit
                 Text(
-                    text = "Jumlah Menit : ${aktivitasViewModel.dataAllAktivitasPengguna?.total_menit} Menit",
+                    text = "Jumlah Menit Aktivitas $tingkat_aktivitas: ${aktivitasViewModel.dataAllAktivitasPengguna?.total_menit} Menit",
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier.padding(bottom = 4.dp),
                     textAlign = TextAlign.Start,
@@ -271,41 +271,13 @@ fun AktivitasPenggunaScreen(
 
                 // Jumlah kalori
                 Text(
-                    text = "Jumlah Kalori : ${aktivitasViewModel.dataAllAktivitasPengguna?.total_kalori} Cal",
+                    text = "Jumlah Kalori Aktivitas $tingkat_aktivitas : ${aktivitasViewModel.dataAllAktivitasPengguna?.total_kalori} Cal",
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier.padding(bottom = 16.dp),
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.SemiBold,
                     color = mBlack
                 )
-
-                // Button Tambah ke Diary
-                Button(
-                    onClick = {
-
-                    },
-                    enabled = ((aktivitasViewModel.dataAllAktivitasPengguna?.total_menit
-                        ?: 0) > 0) && ((aktivitasViewModel.dataAllAktivitasPengguna?.total_kalori?.toInt()
-                        ?: 0) > 0),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = mRedMain,
-                        contentColor = mWhite,
-                        disabledBackgroundColor = mLightGrayScale,
-                        disabledContentColor = mBlack
-                    ),
-                    shape = RoundedCornerShape(32.dp),
-
-                    ) {
-                    Text(
-                        text = "Tambah ke Diary",
-                        style = MaterialTheme.typography.body1,
-                        fontWeight = FontWeight.SemiBold,
-                        color = mWhite
-                    )
-                }
 
             }
 

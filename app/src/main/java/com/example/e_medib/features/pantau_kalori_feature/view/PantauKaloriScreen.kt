@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -73,10 +74,20 @@ fun PantauKaloriScreen(
     val sheetMakanMalam = com.dokar.sheets.rememberBottomSheetState()
     val sheetLainnya = com.dokar.sheets.rememberBottomSheetState()
 
+    val sheetDataSarapan = com.dokar.sheets.rememberBottomSheetState()
+    val sheetDataMakanSiang = com.dokar.sheets.rememberBottomSheetState()
+    val sheetDataMakanMalam = com.dokar.sheets.rememberBottomSheetState()
+    val sheetDataLainnya = com.dokar.sheets.rememberBottomSheetState()
+
     // textfield controller
+    val jenisWaktuMakan = rememberSaveable() { mutableStateOf("") }
     val makanan = rememberSaveable() { mutableStateOf("") }
     val porsi = rememberSaveable() { mutableStateOf("") }
     val kalori = rememberSaveable() { mutableStateOf("") }
+    val glukosa = rememberSaveable() { mutableStateOf("") }
+    val karbohidrat = rememberSaveable() { mutableStateOf("") }
+    val protein = rememberSaveable() { mutableStateOf("") }
+    val kandunganGiziLain = rememberSaveable() { mutableStateOf("") }
 
     LaunchedEffect(Unit, block = {
         val headerMap = mutableMapOf<String, String>()
@@ -191,6 +202,14 @@ fun PantauKaloriScreen(
                                     }
                                 }
                                 IconButton(modifier = Modifier.weight(1f), onClick = {
+                                    jenisWaktuMakan.value = ""
+                                    makanan.value = ""
+                                    porsi.value = ""
+                                    kalori.value = ""
+                                    glukosa.value = ""
+                                    karbohidrat.value = ""
+                                    protein.value = ""
+                                    kandunganGiziLain.value = ""
                                     scope.launch {
                                         sheetSarapan.expand()
                                     }
@@ -230,6 +249,20 @@ fun PantauKaloriScreen(
                                             elevation = 2.dp,
                                             modifier = Modifier
                                                 .padding(vertical = 8.dp)
+                                                .clickable {
+                                                    jenisWaktuMakan.value = it.jenis_waktu_makan
+                                                    makanan.value = it.makanan
+                                                    porsi.value = it.porsi
+                                                    kalori.value = it.kalori
+                                                    glukosa.value = it.kadar_glukosa
+                                                    karbohidrat.value = it.kadar_karbohidrat
+                                                    protein.value = it.kadar_protein
+                                                    kandunganGiziLain.value =
+                                                        it.kandungan_gizi_lainnya
+                                                    scope.launch {
+                                                        sheetDataSarapan.expand()
+                                                    }
+                                                }
                                                 .fillMaxWidth()
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp)) {
@@ -318,6 +351,15 @@ fun PantauKaloriScreen(
                                     }
                                 }
                                 IconButton(modifier = Modifier.weight(1f), onClick = {
+                                    jenisWaktuMakan.value = ""
+                                    makanan.value = ""
+                                    porsi.value = ""
+                                    kalori.value = ""
+                                    glukosa.value = ""
+                                    karbohidrat.value = ""
+                                    protein.value = ""
+                                    kandunganGiziLain.value = ""
+
                                     scope.launch {
                                         sheetMakanSiang.expand()
                                     }
@@ -356,6 +398,20 @@ fun PantauKaloriScreen(
                                             elevation = 2.dp,
                                             modifier = Modifier
                                                 .padding(vertical = 8.dp)
+                                                .clickable {
+                                                    jenisWaktuMakan.value = it.jenis_waktu_makan
+                                                    makanan.value = it.makanan
+                                                    porsi.value = it.porsi
+                                                    kalori.value = it.kalori
+                                                    glukosa.value = it.kadar_glukosa
+                                                    karbohidrat.value = it.kadar_karbohidrat
+                                                    protein.value = it.kadar_protein
+                                                    kandunganGiziLain.value =
+                                                        it.kandungan_gizi_lainnya
+                                                    scope.launch {
+                                                        sheetDataMakanSiang.expand()
+                                                    }
+                                                }
                                                 .fillMaxWidth()
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp)) {
@@ -445,6 +501,15 @@ fun PantauKaloriScreen(
                                     }
                                 }
                                 IconButton(modifier = Modifier.weight(1f), onClick = {
+                                    jenisWaktuMakan.value = ""
+                                    makanan.value = ""
+                                    porsi.value = ""
+                                    kalori.value = ""
+                                    glukosa.value = ""
+                                    karbohidrat.value = ""
+                                    protein.value = ""
+                                    kandunganGiziLain.value = ""
+
                                     scope.launch {
                                         sheetMakanMalam.expand()
                                     }
@@ -483,6 +548,22 @@ fun PantauKaloriScreen(
                                             elevation = 2.dp,
                                             modifier = Modifier
                                                 .padding(vertical = 8.dp)
+                                                .clickable {
+                                                    jenisWaktuMakan.value = it.jenis_waktu_makan
+                                                    makanan.value = it.makanan
+                                                    porsi.value = it.porsi
+                                                    kalori.value = it.kalori
+                                                    glukosa.value = it.kadar_glukosa
+                                                    karbohidrat.value = it.kadar_karbohidrat
+                                                    protein.value = it.kadar_protein
+                                                    kandunganGiziLain.value =
+                                                        it.kandungan_gizi_lainnya
+
+
+                                                    scope.launch {
+                                                        sheetMakanMalam.expand()
+                                                    }
+                                                }
                                                 .fillMaxWidth()
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp)) {
@@ -523,7 +604,6 @@ fun PantauKaloriScreen(
                             }
                         },
                     )
-
 
                     // CAMILAN / LAINNYA
                     CustomExpandedCard(
@@ -573,6 +653,15 @@ fun PantauKaloriScreen(
                                     }
                                 }
                                 IconButton(modifier = Modifier.weight(1f), onClick = {
+                                    jenisWaktuMakan.value = ""
+                                    makanan.value = ""
+                                    porsi.value = ""
+                                    kalori.value = ""
+                                    glukosa.value = ""
+                                    karbohidrat.value = ""
+                                    protein.value = ""
+                                    kandunganGiziLain.value = ""
+
                                     scope.launch {
                                         sheetLainnya.expand()
                                     }
@@ -611,6 +700,21 @@ fun PantauKaloriScreen(
                                             elevation = 2.dp,
                                             modifier = Modifier
                                                 .padding(vertical = 8.dp)
+                                                .clickable {
+                                                    jenisWaktuMakan.value = it.jenis_waktu_makan
+                                                    makanan.value = it.makanan
+                                                    porsi.value = it.porsi
+                                                    kalori.value = it.kalori
+                                                    glukosa.value = it.kadar_glukosa
+                                                    karbohidrat.value = it.kadar_karbohidrat
+                                                    protein.value = it.kadar_protein
+                                                    kandunganGiziLain.value =
+                                                        it.kandungan_gizi_lainnya
+
+                                                    scope.launch {
+                                                        sheetDataLainnya.expand()
+                                                    }
+                                                }
                                                 .fillMaxWidth()
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp)) {
@@ -651,8 +755,6 @@ fun PantauKaloriScreen(
                             }
                         },
                     )
-
-
                     // TOTAL KALORI
                     CustomExpandedCard(
                         modifier = Modifier.padding(top = 16.dp),
@@ -683,7 +785,11 @@ fun PantauKaloriScreen(
 
                                 Button(
                                     onClick = {
-
+                                        pantauKaloriViewModel.allKonsumsiSarapan.total_kalori?.let { it1 ->
+                                            pantauKaloriViewModel.addKaloriKonsumiToDiary(
+                                                it1, context
+                                            )
+                                        }
                                     },
                                     modifier = Modifier
                                         .padding(top = 24.dp)
@@ -721,6 +827,10 @@ fun PantauKaloriScreen(
             makanan,
             porsi,
             kalori,
+            glukosa,
+            karbohidrat,
+            protein,
+            kandunganGiziLain,
             jenisWaktuMakan = "SARAPAN",
         )
 
@@ -731,6 +841,10 @@ fun PantauKaloriScreen(
             makanan,
             porsi,
             kalori,
+            glukosa,
+            karbohidrat,
+            protein,
+            kandunganGiziLain,
             jenisWaktuMakan = "MAKAN_SIANG",
         )
 
@@ -741,6 +855,10 @@ fun PantauKaloriScreen(
             makanan,
             porsi,
             kalori,
+            glukosa,
+            karbohidrat,
+            protein,
+            kandunganGiziLain,
             jenisWaktuMakan = "MAKAN_MALAM",
             pantauKaloriViewModel,
         )
@@ -752,7 +870,61 @@ fun PantauKaloriScreen(
             makanan,
             porsi,
             kalori,
+            glukosa,
+            karbohidrat,
+            protein,
+            kandunganGiziLain,
             jenisWaktuMakan = "LAINNYA",
+        )
+
+        // ======= BOTTOM SHEET KETERANGAN =======
+        ShowDataBottomSheet(
+            state = sheetDataSarapan,
+            pilihHari,
+            makanan,
+            porsi,
+            kalori,
+            glukosa,
+            karbohidrat,
+            protein,
+            kandunganGiziLain,
+            jenisWaktuMakan,
+        )
+        ShowDataBottomSheet(
+            state = sheetDataMakanSiang,
+            pilihHari,
+            makanan,
+            porsi,
+            kalori,
+            glukosa,
+            karbohidrat,
+            protein,
+            kandunganGiziLain,
+            jenisWaktuMakan,
+        )
+        ShowDataBottomSheet(
+            state = sheetMakanMalam,
+            pilihHari,
+            makanan,
+            porsi,
+            kalori,
+            glukosa,
+            karbohidrat,
+            protein,
+            kandunganGiziLain,
+            jenisWaktuMakan,
+        )
+        ShowDataBottomSheet(
+            state = sheetDataLainnya,
+            pilihHari,
+            makanan,
+            porsi,
+            kalori,
+            glukosa,
+            karbohidrat,
+            protein,
+            kandunganGiziLain,
+            jenisWaktuMakan,
         )
 
     }
@@ -769,6 +941,10 @@ fun ShowCustomBottomSheet(
     makanan: MutableState<String>,
     porsi: MutableState<String>,
     kalori: MutableState<String>,
+    glukosa: MutableState<String>,
+    karbohidrat: MutableState<String>,
+    protein: MutableState<String>,
+    kandunganGiziLain: MutableState<String>,
     jenisWaktuMakan: String,
     pantauKaloriViewModel: PantauKaloriViewModel = hiltViewModel(),
 ) {
@@ -787,14 +963,28 @@ fun ShowCustomBottomSheet(
         textFieldTitle = "Data konsumsi Makanan",
         onClick = {
             val konsumsiMakananData = DataKonsumsiMakananModel(
-                makanan = makanan.value, porsi = porsi.value, kalori = kalori.value, jenisWaktuMakan
+                makanan = makanan.value,
+                porsi = porsi.value,
+                kalori = kalori.value,
+                jenisWaktuMakan,
+                kadar_glukosa = glukosa.value,
+                kadar_karbohidrat = karbohidrat.value,
+                kadar_protein = protein.value,
+                kandungan_gizi_lainnya = kandunganGiziLain.value
             )
+
             pantauKaloriViewModel.tambahKonsumsiMakanan(
                 waktuMakan = jenisWaktuMakan, tanggal = pilihHari, konsumsiMakananData, headerMap
             )
+
             makanan.value = ""
             porsi.value = ""
             kalori.value = ""
+            glukosa.value = ""
+            karbohidrat.value = ""
+            protein.value = ""
+            kandunganGiziLain.value = ""
+
             scope.launch {
                 state.collapse()
             }
@@ -853,7 +1043,290 @@ fun ShowCustomBottomSheet(
                 placeholder = "Masukan kalori makanan (dalam cal)",
                 trailingIcon = null,
                 keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Glukosa (dalam Gram) (Opsional)",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            CustomInputField(
+                valueState = glukosa,
+                placeholder = "Masukan kadar glukosa pada makanan (dalam gram)",
+                trailingIcon = null,
+                useValidation = false,
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Karbohidrat (dalam Gram) (Opsional)",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            CustomInputField(
+                valueState = karbohidrat,
+                placeholder = "Masukan kadar karbohidrat pada makanan (dalam gram)",
+                trailingIcon = null,
+                useValidation = false,
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Protein (dalam Gram) (Opsional)",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            CustomInputField(
+                valueState = protein,
+                placeholder = "Masukan kadar protein pada makanan (dalam gram)",
+                trailingIcon = null,
+                useValidation = false,
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Kandungan Gizi Lain (dalam Gram) (opsional)",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            OutlinedTextField(
+                value = kandunganGiziLain.value,
+                onValueChange = { kandunganGiziLain.value = it },
+                modifier = Modifier
+                    .height(100.dp)
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                ),
+                placeholder = {
+                    Text(
+                        text = "Masukan kadar kandunganGiziLain pada makanan (dalam gram)",
+                        style = MaterialTheme.typography.caption
+                    )
+                },
+                shape = RoundedCornerShape(10.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = mWhite,
+                    unfocusedBorderColor = mLightGrayScale,
+                    focusedBorderColor = mLightGrayScale
+                ),
+            )
+        })
+}
+
+@Composable
+fun ShowDataBottomSheet(
+    state: com.dokar.sheets.BottomSheetState,
+    pilihHari: MutableState<String>,
+    makanan: MutableState<String>,
+    porsi: MutableState<String>,
+    kalori: MutableState<String>,
+    glukosa: MutableState<String>,
+    karbohidrat: MutableState<String>,
+    protein: MutableState<String>,
+    kandunganGiziLain: MutableState<String>,
+    jenisWaktuMakan: MutableState<String>,
+    pantauKaloriViewModel: PantauKaloriViewModel = hiltViewModel(),
+) {
+    CustomBottomSheet(state = state,
+        isEnable = false,
+        title = "Data Konsumsi ${jenisWaktuMakan.value}",
+        textFieldTitle = "Data Konsumsi",
+        onClick = { },
+        body = {
+            // TEXT FIELD
+            Text(
+                text = "Tanggal",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            CustomInputField(
+                valueState = pilihHari,
+                readOnly = true,
+                placeholder = "Masukan tanggal",
+                trailingIcon = null,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Makanan",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            CustomInputField(
+                valueState = makanan,
+                readOnly = true,
+                placeholder = "Masukan makanan",
+                trailingIcon = null,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Porsi (dalam satuan)",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            CustomInputField(
+                valueState = porsi,
+                readOnly = true,
+                placeholder = "Masukan porsi makanan (conton: 1, 2, ..)",
+                trailingIcon = null,
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Kalori (dalam Cal)",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            CustomInputField(
+                valueState = kalori,
+                readOnly = true,
+                placeholder = "Masukan kalori makanan (dalam cal)",
+                trailingIcon = null,
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Glukosa (dalam Gram",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            CustomInputField(
+                valueState = glukosa,
+                readOnly = true,
+                placeholder = "Masukan kadar glukosa pada makanan (dalam gram)",
+                trailingIcon = null,
+                useValidation = false,
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Karbohidrat (dalam Gram)",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            CustomInputField(
+                valueState = karbohidrat,
+                readOnly = true,
+                placeholder = "Masukan kadar karbohidrat pada makanan (dalam gram)",
+                trailingIcon = null,
+                useValidation = false,
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Protein (dalam Gram)",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            CustomInputField(
+                valueState = protein,
+                readOnly = true,
+                placeholder = "Masukan kadar protein pada makanan (dalam gram)",
+                trailingIcon = null,
+                useValidation = false,
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next,
+            )
+
+            Text(
+                text = "Kandungan Gizi Lain (dalam Gram) ",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            OutlinedTextField(
+                value = kandunganGiziLain.value,
+                onValueChange = { kandunganGiziLain.value = it },
+                readOnly = true,
+                modifier = Modifier
+                    .height(100.dp)
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                ),
+                placeholder = {
+                    Text(
+                        text = "Masukan kadar kandunganGiziLain pada makanan (dalam gram)",
+                        style = MaterialTheme.typography.caption
+                    )
+                },
+                shape = RoundedCornerShape(10.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = mWhite,
+                    unfocusedBorderColor = mLightGrayScale,
+                    focusedBorderColor = mLightGrayScale
+                ),
             )
         })
 }

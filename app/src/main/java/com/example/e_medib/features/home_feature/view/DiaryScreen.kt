@@ -1,7 +1,17 @@
 package com.example.e_medib.features.home_feature.view
 
 import CustomBottomSheet
-import androidx.compose.foundation.*
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.FileUpload
-import androidx.compose.material.icons.rounded.UploadFile
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -20,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -32,20 +43,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.e_medib.R
 import com.example.e_medib.features.aktivitas_feature.view_model.AktivitasViewModel
 import com.example.e_medib.features.home_feature.model.catatan.DataCatatanModel
+import com.example.e_medib.features.home_feature.model.diary.DataDiaryModel
 import com.example.e_medib.features.home_feature.view_model.HomeViewModel
+import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
 import com.example.e_medib.utils.CustomDataStore
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 @Composable
 fun DiaryScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
     aktivitasViewModel: AktivitasViewModel = hiltViewModel()
 ) {
+    val mContext = LocalContext.current
     val mExpanded = remember { mutableStateOf(false) }
     val jenisLuka = listOf("Luka Basah", "Luka Kering")
     val selectedLuka = remember { mutableStateOf("") }
@@ -55,22 +71,44 @@ fun DiaryScreen(
 
     val scope = rememberCoroutineScope()
 
-    val context = LocalContext.current
-    val store = CustomDataStore(context)
+
+    val store = CustomDataStore(mContext)
     val tokenText = store.getAccessToken.collectAsState(initial = "")
+    val gulaDarahTemp = store.getGulaDarah.collectAsState(initial = "")
+    val kolesterolTemp = store.getKolesterol.collectAsState(initial = "")
+    val gambarLukaTemp = store.getGambarLuka.collectAsState(initial = "")
+    val catatanLukaTemp = store.getCatatanLuka.collectAsState(initial = "")
+    val catatanLainnyaTemp = store.getCatatanLainnya.collectAsState(initial = "")
+    val totalKonsumsiKaloriTemp = store.getTotalKonsumsiKalori.collectAsState(initial = "")
+    val totalKaloriAKtivitasTemp = store.getTotalKaloriAktivitas.collectAsState(initial = "")
 
     // sheet state
     val sheetTambahDiary = com.dokar.sheets.rememberBottomSheetState()
     val sheetTambahCatatan = com.dokar.sheets.rememberBottomSheetState()
 
-    val mContext = LocalContext.current
 
     // textfield controller
-    val tambahDiaryState = rememberSaveable() { mutableStateOf("") }
     val gambarLukaFile = rememberSaveable() { mutableStateOf("") }
     val catatanLuka = rememberSaveable() { mutableStateOf("") }
     val catatanLainnya = rememberSaveable() { mutableStateOf("") }
     val isReadOnly = rememberSaveable() { mutableStateOf(false) }
+    val imageUrl = rememberSaveable() { mutableStateOf("") }
+
+
+    var imageUri = remember {
+        mutableStateOf<Uri?>(null)
+    }
+    val gambarLukaBitmap = remember {
+        mutableStateOf<Bitmap?>(null)
+    }
+
+    val galeryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        imageUri.value = uri
+    }
+
+//    val imageFile = imageUri.value!!.path?.let { File(it) }
 
     LaunchedEffect(Unit, block = {
 
@@ -177,6 +215,7 @@ fun DiaryScreen(
                                         catatanLuka.value = it.catatan_luka
                                         catatanLainnya.value = it.catatan
                                         isReadOnly.value = true
+                                        imageUrl.value = it.gambar_luka as String
                                         scope.launch {
                                             sheetTambahCatatan.expand()
                                         }
@@ -235,12 +274,78 @@ fun DiaryScreen(
     // ======= BOTTOM SHEET =======
     // sheet tambah diary
     CustomBottomSheet(state = sheetTambahDiary,
-        isEnable = tambahDiaryState.value.isNotEmpty(),
+        isEnable = gulaDarahTemp.value.isNotEmpty() &&
+                kolesterolTemp.value.isNotEmpty() &&
+                gambarLukaTemp.value.isNotEmpty() &&
+                catatanLukaTemp.value.isNotEmpty() &&
+                totalKonsumsiKaloriTemp.value.isNotEmpty() &&
+                totalKaloriAKtivitasTemp.value.isNotEmpty() &&
+                catatanLainnyaTemp.value.isNotEmpty(),
         textFieldTitle = "Tambah Diary",
         onClick = {
-
+            val headerMap = mutableMapOf<String, String>()
+            headerMap["Accept"] = "application/json"
+            headerMap["Authorization"] = "Bearer ${tokenText.value}"
+            val dataDiaryModel = DataDiaryModel(
+                catatan = catatanLainnyaTemp.value,
+                catatan_luka = catatanLukaTemp.value,
+                gambar_luka = gambarLukaTemp.value,
+                gula_darah = gulaDarahTemp.value,
+                kolesterol = kolesterolTemp.value,
+                total_konsumsi_kalori = totalKonsumsiKaloriTemp.value,
+                total_pembakaran_kalori = totalKaloriAKtivitasTemp.value
+            )
+            homeViewModel.tambahDiaryRekap(dataDiaryModel, headerMap, mContext)
+            scope.launch {
+                sheetTambahDiary.collapse()
+            }
         },
         body = {
+            // Preview Gambar
+            Text(
+                text = "Gambar Luka",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            Image(
+                painter = rememberAsyncImagePainter("https://emedib.groupdeku.tech/public${gambarLukaTemp.value}"),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(8)),
+                contentScale = ContentScale.Crop
+            )
+
+            // Catatan  Luka
+            Text(
+                text = "Catatan Luka",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp, top = 16.dp),
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                color = mGrayScale
+            )
+            OutlinedTextField(
+                value = catatanLukaTemp.value,
+                onValueChange = { },
+                modifier = Modifier.fillMaxWidth(),
+                readOnly = true,
+                shape = RoundedCornerShape(10.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = mWhite,
+                    unfocusedBorderColor = mLightGrayScale,
+                    focusedBorderColor = mLightGrayScale
+                ),
+            )
+
             // Gula Darah dan keterangan
             Text(
                 text = "Gula Darah",
@@ -253,11 +358,9 @@ fun DiaryScreen(
                 color = mGrayScale
             )
             OutlinedTextField(
-                value = "- mg/dL." +
-                        " Keterangan :- ",
+                value = gulaDarahTemp.value,
                 onValueChange = { },
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 readOnly = true,
                 shape = RoundedCornerShape(10.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -279,36 +382,9 @@ fun DiaryScreen(
                 color = mGrayScale
             )
             OutlinedTextField(
-                value = "- mg/dL." +
-                        " Keterangan :- ",
+                value = kolesterolTemp.value,
                 onValueChange = { },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                readOnly = true,
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = mWhite,
-                    unfocusedBorderColor = mLightGrayScale,
-                    focusedBorderColor = mLightGrayScale
-                ),
-            )
-
-            // Catatan  Luka
-            Text(
-                text = "Catatan Luka",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp, top = 16.dp),
-                style = MaterialTheme.typography.caption,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Start,
-                color = mGrayScale
-            )
-            OutlinedTextField(
-                value = "-",
-                onValueChange = { },
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 readOnly = true,
                 shape = RoundedCornerShape(10.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -330,10 +406,9 @@ fun DiaryScreen(
                 color = mGrayScale
             )
             OutlinedTextField(
-                value = "-",
+                value = totalKonsumsiKaloriTemp.value,
                 onValueChange = { },
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 readOnly = true,
                 shape = RoundedCornerShape(10.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -355,10 +430,9 @@ fun DiaryScreen(
                 color = mGrayScale
             )
             OutlinedTextField(
-                value = "- Cal",
+                value = totalKaloriAKtivitasTemp.value,
                 onValueChange = { },
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 readOnly = true,
                 shape = RoundedCornerShape(10.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -380,10 +454,9 @@ fun DiaryScreen(
                 color = mGrayScale
             )
             OutlinedTextField(
-                value = "-",
+                value = catatanLainnyaTemp.value,
                 onValueChange = { },
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 readOnly = true,
                 shape = RoundedCornerShape(10.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -395,7 +468,7 @@ fun DiaryScreen(
 
         })
 
-    // sheet tambah catatan
+    // sheet tambah catatan Luka
     CustomBottomSheet(state = sheetTambahCatatan,
         isEnable = selectedLuka.value.isNotEmpty() && catatanLainnya.value.isNotEmpty() && catatanLuka.value.isNotEmpty() && !isReadOnly.value,
         textFieldTitle = "Tambah Catatan",
@@ -403,21 +476,59 @@ fun DiaryScreen(
             val headerMap = mutableMapOf<String, String>()
             headerMap["Accept"] = "application/json"
             headerMap["Authorization"] = "Bearer ${tokenText.value}"
-
-            val dataCatatanModel = DataCatatanModel(
-                jenis_luka = selectedLuka.value,
-                catatan_luka = catatanLuka.value,
-                catatan = catatanLainnya.value
-            )
-
-            homeViewModel.tambahCatatan(dataCatatanModel, headerMap, mContext)
+            val data = DataCatatanModel(selectedLuka.value, catatanLuka.value, catatanLainnya.value)
+            gambarLukaBitmap.value?.let {
+                homeViewModel.tambahCatatan(
+                    data, it, headerMap, mContext
+                )
+            }
             scope.launch {
                 sheetTambahCatatan.collapse()
             }
         },
         body = {
-            // ADD IMAGE FILE
+            // PREVIEW IMAGE
             if (!isReadOnly.value) Column() {
+                imageUri.value?.let {
+                    if (Build.VERSION.SDK_INT < 28) {
+                        gambarLukaBitmap.value =
+                            MediaStore.Images.Media.getBitmap(mContext.contentResolver, it)
+                    } else {
+                        val source = it.let { it1 ->
+                            ImageDecoder.createSource(
+                                mContext.contentResolver, it1
+                            )
+                        }
+                        gambarLukaBitmap.value =
+                            source.let { it1 -> ImageDecoder.decodeBitmap(it1) }
+                    }
+                }
+
+                // preview gambar luka
+                gambarLukaBitmap.value?.let { btm ->
+                    Text(
+                        text = "Preview Gambar Luka",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp, top = 16.dp),
+                        style = MaterialTheme.typography.caption,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Start,
+                        color = mGrayScale
+                    )
+
+                    Image(
+                        bitmap = btm.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(RoundedCornerShape(8)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                // UPLOAD GAMBAR LUKA
                 Text(
                     text = "Gambar Luka",
                     modifier = Modifier
@@ -441,7 +552,7 @@ fun DiaryScreen(
                             },
                         placeholder = {
                             Text(
-                                text = "Gambar Luka (Opsional)",
+                                text = if (imageUri.value == null) "Upload gambar luka" else imageUri.value!!.path.toString(),
                                 style = MaterialTheme.typography.body1,
                                 textAlign = TextAlign.Start,
                                 fontWeight = FontWeight.Normal,
@@ -450,7 +561,7 @@ fun DiaryScreen(
                         },
                         trailingIcon = {
                             IconButton(onClick = {
-                                // upload imagr
+                                galeryLauncher.launch("image/*")
                             }) {
                                 Icon(
                                     Icons.Outlined.FileUpload,
@@ -470,7 +581,29 @@ fun DiaryScreen(
                         ),
                     )
                 }
+            } else {
+                // IMAGE LUKA
+                Text(
+                    text = "Gambar Luka",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp, top = 16.dp),
+                    style = MaterialTheme.typography.caption,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Start,
+                    color = mGrayScale
+                )
+                Image(
+                    painter = rememberAsyncImagePainter("https://emedib.groupdeku.tech/public${imageUrl.value}"),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(8)),
+                    contentScale = ContentScale.Crop
+                )
             }
+
 
             // JENIS LUKA
             Text(
@@ -690,5 +823,5 @@ fun DiaryBox(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFF)
 @Composable
 fun DiaryScreenPreview() {
-    DiaryScreen()
+//    DiaryScreen()
 }

@@ -3,6 +3,7 @@ package com.example.e_medib.features.home_feature.view
 import CustomBottomSheet
 import CustomExpandedCard
 import CustomInputField
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.runtime.*
@@ -79,6 +81,7 @@ fun KondisiKesehatanScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
 
     val jenisKeterangn = listOf("BERPUASA", "SEBELUM_MAKAN", "SESUDAH_MAKAN", "LAINNYA")
     val mExpanded = remember { mutableStateOf(false) }
+    val mExpandKeterangan = remember { mutableStateOf(false) }
     val mTextFieldSize = remember { mutableStateOf(Size.Zero) }
     val icon = if (mExpanded.value)
         Icons.Filled.KeyboardArrowUp
@@ -635,7 +638,7 @@ fun KondisiKesehatanScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
         textFieldTitle = "Kolesterol",
         onClick = {
             val dataKolesterol = DataKolesterolModel(kolesterol.value)
-            homeViewModel.hitungKolesterol(dataKolesterol, headerMap)
+            homeViewModel.hitungKolesterol(dataKolesterol, headerMap, context)
             kolesterol.value = ""
             scope.launch {
                 sheetKolesterol.collapse()
@@ -669,8 +672,8 @@ fun KondisiKesehatanScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
         textFieldTitle = "Gula Darah",
         onClick = {
             val dataGulaDarah = DataGulaDarahModel(gulaDarah.value, keterangan.value)
-            homeViewModel.hitungGulaDarah(dataGulaDarah, headerMap)
-            
+            homeViewModel.hitungGulaDarah(dataGulaDarah, headerMap, context)
+
             gulaDarah.value = ""
             keterangan.value = ""
             scope.launch {
@@ -754,15 +757,38 @@ fun KondisiKesehatanScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
                         keterangan.value = label
                         mExpanded.value = false
                     }) {
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.body1,
-                            textAlign = TextAlign.Start,
-                            fontWeight = FontWeight.Normal,
-                            color = mGrayScale
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = label,
+                                style = MaterialTheme.typography.body1,
+                                textAlign = TextAlign.Start,
+                                fontWeight = FontWeight.Normal,
+                                color = mGrayScale
+                            )
+                            IconButton(onClick = {
+                                keterangan.value = label
+                                Log.d("label : ", keterangan.value)
+                                mExpandKeterangan.value = !mExpandKeterangan.value
+                            }) {
+                                Icon(
+                                    Icons.Outlined.Info,
+                                    contentDescription = "contentDescription",
+                                    tint = mGrayScale,
+
+                                    )
+                            }
+
+
+                        }
                     }
                 }
+                KeteranganDropdownMenu(
+                    label = keterangan.value,
+                    mExpandKeterangan = mExpandKeterangan
+                )
             }
 
 
@@ -802,6 +828,66 @@ fun KondisiKesehatanScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
             )
         })
 
+}
+
+@Composable
+fun KeteranganDropdownMenu(label: String, mExpandKeterangan: MutableState<Boolean>) {
+    DropdownMenu(
+        expanded = mExpandKeterangan.value,
+        onDismissRequest = { mExpandKeterangan.value = false },
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            var judul = ""
+            var deskripsi = ""
+
+            if (label == "BERPUASA") {
+                judul = "BERPUASA"
+                deskripsi =
+                    "Saat Berpuasa (Fasting): Pengukuran ini dilakukan setelah Anda berpuasa selama 8-12 jam. Biasanya dilakukan di pagi hari sebelum makan atau minum apa pun. Pengukuran ini memberikan gambaran tentang gula darah dasar Anda."
+            }
+
+            if (label == "SEBELUM_MAKAN") {
+                judul = "SEBELUM MAKAN"
+                deskripsi =
+                    "Sebelum Makan (Preprandial): Pengukuran ini dilakukan sebelum Anda makan, biasanya diambil setelah periode puasa sekitar 8 jam. Pengukuran ini membantu menilai sejauh mana tubuh Anda dapat mengendalikan gula darah tanpa bantuan makanan."
+            }
+
+            if (label == "SESUDAH_MAKAN") {
+                judul = "SESUDAH MAKAN"
+                deskripsi =
+                    "Sesudah Makan (Postprandial): Pengukuran ini diambil biasanya 2 jam setelah Anda makan. Pengukuran ini memberikan gambaran tentang bagaimana tubuh Anda menangani lonjakan gula darah yang dihasilkan dari makanan yang Anda konsumsi."
+            }
+
+            if (label == "LAINNYA") {
+                judul = "LAINNYA"
+                deskripsi = "Mengkonsumsi makanan seperti camilan"
+            }
+
+            Text(
+                text = judul,
+                style = MaterialTheme.typography.body2,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+                color = mBlack,
+                modifier = Modifier.padding(8.dp)
+            )
+            Text(
+                text = deskripsi,
+                style = MaterialTheme.typography.body1,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Normal,
+                color = mBlack,
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+            )
+
+        }
+    }
 }
 
 

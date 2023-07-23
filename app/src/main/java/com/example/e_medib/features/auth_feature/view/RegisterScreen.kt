@@ -22,6 +22,7 @@ import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -52,6 +53,7 @@ import com.example.e_medib.features.profile_feature.model.bmrModel.DataBMRModel
 import com.example.e_medib.features.profile_feature.view_model.ProfileViewModel
 import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
+import com.example.e_medib.utils.CustomDataStore
 import java.time.LocalDate
 import java.util.*
 
@@ -60,32 +62,21 @@ import java.util.*
 fun RegisterScreen(
     navController: NavController,
     authViewModel: AuthViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    isEditProfile: Boolean = false
 ) {
     val mContext = LocalContext.current
     val mTextFieldSize = remember { mutableStateOf(Size.Zero) }
     val mCalendar = Calendar.getInstance()
-    val mYear: Int
-    val mMonth: Int
-    val mDay: Int
-
-    mYear = mCalendar.get(Calendar.YEAR)
-    mMonth = mCalendar.get(Calendar.MONTH)
-    mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
 
     mCalendar.time = Date()
 
-
-    var showDatePicker = mutableStateOf(false)
-
     val jenisKelamin = listOf("Laki-laki", "Perempuan")
     val jenisKelaminExpand = remember { mutableStateOf(false) }
-
     val namaLengkap = rememberSaveable() { mutableStateOf("") }
     val username = rememberSaveable() { mutableStateOf("") }
     val nik = rememberSaveable() { mutableStateOf("") }
     val email = rememberSaveable() { mutableStateOf("") }
-    val tanggalLahir = rememberSaveable() { mutableStateOf("") }
     val selectedJenisKelamin = rememberSaveable() { mutableStateOf("") }
     val usia = rememberSaveable() { mutableStateOf("") }
     val tinggiBadan = rememberSaveable() { mutableStateOf("") }
@@ -95,43 +86,33 @@ fun RegisterScreen(
     val showPassword = rememberSaveable() { mutableStateOf(false) }
     val showRepeatPassword = rememberSaveable() { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val isValidInputs =
-        remember(
-            namaLengkap.value,
-            username.value,
-            nik.value,
-            email.value,
-            tanggalLahir.value,
-            selectedJenisKelamin.value,
-            usia.value,
-            tinggiBadan.value,
-            beratBadan.value,
-            password.value,
-            repeatPassword.value,
-        ) {
-            namaLengkap.value.trim().isNotEmpty() && username.value.trim()
-                .isNotEmpty() && nik.value.trim().isNotEmpty() && email.value.trim()
-                .isNotEmpty() && tanggalLahir.value.trim()
-                .isNotEmpty() && selectedJenisKelamin.value.trim()
-                .isNotEmpty() && usia.value.trim()
-                .isNotEmpty() && tinggiBadan.value.trim()
-                .isNotEmpty() && beratBadan.value.trim()
-                .isNotEmpty() && password.value.trim()
-                .isNotEmpty() && repeatPassword.value.trim()
-                .isNotEmpty() && password.value == repeatPassword.value
-        }
+    val isValidInputs = remember(
+        namaLengkap.value,
+        username.value,
+        nik.value,
+        email.value,
+        selectedJenisKelamin.value,
+        usia.value,
+        tinggiBadan.value,
+        beratBadan.value,
+        password.value,
+        repeatPassword.value,
+    ) {
+        namaLengkap.value.trim().isNotEmpty() && username.value.trim()
+            .isNotEmpty() && nik.value.trim().isNotEmpty() && email.value.trim()
+            .isNotEmpty() && selectedJenisKelamin.value.trim().isNotEmpty() && usia.value.trim()
+            .isNotEmpty() && tinggiBadan.value.trim().isNotEmpty() && beratBadan.value.trim()
+            .isNotEmpty() && password.value.trim().isNotEmpty() && repeatPassword.value.trim()
+            .isNotEmpty() && password.value.length > 4 && password.value == repeatPassword.value
+    }
 
-    val mDatePickerDialog = DatePickerDialog(
-        mContext,
-        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-            tanggalLahir.value = "$mDayOfMonth/${mMonth + 1}/$mYear"
-        }, mYear, mMonth, mDay
-    )
 
-    val icon = if (jenisKelaminExpand.value)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
+    val icon = if (jenisKelaminExpand.value) Icons.Filled.KeyboardArrowUp
+    else Icons.Filled.KeyboardArrowDown
+
+
+    val store = CustomDataStore(mContext)
+    val tokenText = store.getAccessToken.collectAsState(initial = "")
 
 
     Scaffold() {
@@ -143,30 +124,41 @@ fun RegisterScreen(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-
-
-            // TITLE
-            Text(
-                text = "Daftar Akun",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                style = MaterialTheme.typography.h5,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Start,
-                color = mRedMain
-            )
-            Text(
-                text = "Masukkan data diri anda",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
-                style = MaterialTheme.typography.caption,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Start,
-                color = mRedMain
-            )
-
+            if (isEditProfile) {
+                // TITLE
+                Text(
+                    text = "Edit Data Diri",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 24.dp),
+                    style = MaterialTheme.typography.h5,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = mRedMain
+                )
+            } else {
+                // TITLE
+                Text(
+                    text = "Daftar Akun",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    style = MaterialTheme.typography.h5,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start,
+                    color = mRedMain
+                )
+                Text(
+                    text = "Masukkan data diri anda",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp),
+                    style = MaterialTheme.typography.caption,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Start,
+                    color = mRedMain
+                )
+            }
 
             // NAMA LENGKAP
             Text(
@@ -185,8 +177,8 @@ fun RegisterScreen(
                 trailingIcon = null,
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
-            )
 
+                )
 
             // USERNAME
             Text(
@@ -241,52 +233,9 @@ fun RegisterScreen(
                 valueState = email,
                 placeholder = "Angelina12@gmail.com",
                 trailingIcon = null,
+                isEmail = true,
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
-            )
-
-            // TANGGAL LAHIR
-            Text(
-                text = "Tanggal Lahir",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp, top = 16.dp),
-                style = MaterialTheme.typography.caption,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Start,
-                color = mBlack
-            )
-            OutlinedTextField(
-                value = tanggalLahir.value,
-                onValueChange = { tanggalLahir.value = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onGloballyPositioned { coordinates ->
-                        mTextFieldSize.value = coordinates.size.toSize()
-                    },
-                placeholder = {
-                    Text(
-                        text = "12/01/2001",
-                    )
-                },
-                trailingIcon = {
-                    IconButton(onClick = {
-                        mDatePickerDialog.show()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Outlined.CalendarMonth,
-                            contentDescription = "CalendarMonth"
-                        )
-                    }
-                },
-                readOnly = true,
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = mWhite,
-                    textColor = mBlack,
-                    unfocusedBorderColor = mLightGrayScale,
-                    focusedBorderColor = mLightGrayScale
-                ),
             )
 
             // JENIS KELAMIN
@@ -337,11 +286,16 @@ fun RegisterScreen(
                     focusedBorderColor = mLightGrayScale
                 ),
             )
+            if (selectedJenisKelamin.value.isEmpty()) Text(
+                text = "Data tidak boleh kosong",
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.Normal,
+                color = mRedMain
+            )
             DropdownMenu(
                 expanded = jenisKelaminExpand.value,
                 onDismissRequest = { jenisKelaminExpand.value = false },
-                modifier = Modifier
-                    .width(with(LocalDensity.current) { mTextFieldSize.value.width.toDp() })
+                modifier = Modifier.width(with(LocalDensity.current) { mTextFieldSize.value.width.toDp() })
             ) {
                 jenisKelamin.forEach { label ->
                     DropdownMenuItem(onClick = {
@@ -477,6 +431,12 @@ fun RegisterScreen(
                 imeAction = ImeAction.Next,
                 label = "Password",
             )
+            if (password.value.length < 4) Text(
+                text = "Password minimal terdiri dari 4 karakter",
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.Normal,
+                color = mRedMain
+            )
 
             // REPEAT PASSWORD
             Text(
@@ -498,6 +458,12 @@ fun RegisterScreen(
                 imeAction = ImeAction.Done,
                 label = "Ulangi Password",
             )
+            if (password.value != repeatPassword.value) Text(
+                text = "Pastikan password yang dmasukkan sama",
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.Normal,
+                color = mRedMain
+            )
             Spacer(modifier = Modifier.height(32.dp))
 
             // BUTTON
@@ -510,14 +476,21 @@ fun RegisterScreen(
                         username.value,
                         nik.value,
                         email.value,
-                        tanggalLahir.value,
                         if (selectedJenisKelamin.value == "Laki-laki") "L" else "P",
                         usia.value,
                         tinggiBadan.value,
                         beratBadan.value,
                         password.value
                     )
-                    authViewModel.doRegister(registerData, context = mContext, navigate = {
+                    val headerMap = mutableMapOf<String, String>()
+                    headerMap["Accept"] = "application/json"
+                    headerMap["Authorization"] = "Bearer ${tokenText.value}"
+
+                    if (isEditProfile) authViewModel.updateProfile(headerMap,
+                        registerData,
+                        mContext,
+                        navigate = { navController.popBackStack() })
+                    else authViewModel.doRegister(registerData, context = mContext, navigate = {
                         // Back to Login
                         navController.popBackStack()
                     })
@@ -534,7 +507,13 @@ fun RegisterScreen(
                 shape = RoundedCornerShape(32.dp),
                 enabled = !authViewModel.isLoading && isValidInputs
             ) {
-                Text(
+                if (isEditProfile) Text(
+                    text = "Simpan",
+                    style = MaterialTheme.typography.body1,
+                    fontWeight = FontWeight.SemiBold,
+                    color = mWhite
+                )
+                else Text(
                     text = "Daftar",
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.SemiBold,
@@ -542,36 +521,33 @@ fun RegisterScreen(
                 )
             }
 
+            if (!isEditProfile)
             // BALIK KE LOGIN
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Sudah punya akun ?",
-                    style = MaterialTheme.typography.caption,
-                    fontWeight = FontWeight.Normal,
-                    color = mBlack
-                )
-                TextButton(onClick = {
-                    navController.popBackStack()
-                }) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "Masuk",
+                        text = "Sudah punya akun ?",
                         style = MaterialTheme.typography.caption,
-                        fontWeight = FontWeight.SemiBold,
-                        color = mRedMain
+                        fontWeight = FontWeight.Normal,
+                        color = mBlack
                     )
+                    TextButton(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Text(
+                            text = "Masuk",
+                            style = MaterialTheme.typography.caption,
+                            fontWeight = FontWeight.SemiBold,
+                            color = mRedMain
+                        )
+                    }
                 }
-            }
 
         }
 
-        // DATE PICKER
-        if (showDatePicker.value) {
-
-        }
     }
 }
 

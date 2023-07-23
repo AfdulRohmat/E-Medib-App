@@ -36,4 +36,20 @@ class AuthRepository @Inject constructor(private val eMedibApi: EMedibApi) {
         }
     }
 
+    // UPDATE PROFILE
+    suspend fun updateProfile(
+        headers: Map<String, String>,
+        data: DataRegisterModel
+    ): Resource<RegisterResponse> {
+        Resource.Loading(data = true)
+        return try {
+            val response = eMedibApi.updateProfile(headers, data)
+            Resource.Success(data = response)
+        } catch (e: Exception) {
+            Resource.Error(message = e.message.toString())
+        } finally {
+            Resource.Loading(data = false)
+        }
+    }
+
 }

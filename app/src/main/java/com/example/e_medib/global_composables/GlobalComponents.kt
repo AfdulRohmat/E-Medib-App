@@ -45,17 +45,15 @@ fun CustomExpandedCard(
     val icon = Icons.Default.KeyboardArrowDown
     val rotationState by animateFloatAsState(targetValue = if (expandedState.value) 180f else 0f)
 
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .animateContentSize(
-                animationSpec = tween(durationMillis = 300, easing = LinearOutSlowInEasing)
-            ),
+    Card(modifier = modifier
+        .fillMaxWidth()
+        .animateContentSize(
+            animationSpec = tween(durationMillis = 300, easing = LinearOutSlowInEasing)
+        ),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(2.dp, color = mLightGrayScale),
         elevation = 0.dp,
-        onClick = { expandedState.value = !expandedState.value }
-    ) {
+        onClick = { expandedState.value = !expandedState.value }) {
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,8 +70,7 @@ fun CustomExpandedCard(
                 )
 
                 // body
-                if (expandedState.value)
-                    body()
+                if (expandedState.value) body()
 
 
                 // footer
@@ -96,6 +93,12 @@ fun CustomExpandedCard(
     }
 }
 
+fun isValidEmail(email: String): Boolean {
+    val emailRegex = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+".toRegex()
+    return email.matches(emailRegex)
+}
+
+
 @Composable
 fun CustomInputField(
     modifier: Modifier = Modifier,
@@ -103,35 +106,59 @@ fun CustomInputField(
     placeholder: String,
     isEnable: Boolean = true,
     isSingleLine: Boolean = true,
-    readOnly:Boolean = false,
+    readOnly: Boolean = false,
+    isEmail: Boolean = false,
+    useValidation: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
     onAction: KeyboardActions = KeyboardActions.Default,
     trailingIcon: @Composable() (() -> Unit)?,
     visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
-    OutlinedTextField(
-        value = valueState.value, onValueChange = { valueState.value = it },
-        placeholder = { Text(text = placeholder) },
-        singleLine = isSingleLine,
-        textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colors.onBackground),
-        enabled = isEnable,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
-        keyboardActions = onAction,
-        shape = RoundedCornerShape(10.dp),
-        readOnly = readOnly,
-        visualTransformation = visualTransformation,
-        trailingIcon = trailingIcon,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = mLightGrayScale,
-            unfocusedBorderColor = mLightGrayScale,
-            focusedLabelColor = Color.Black,
-            unfocusedLabelColor = Color.Black,
-            placeholderColor = mGrayScale
-        ),
-        modifier = modifier
-            .fillMaxWidth(),
-    )
+    Column(
+        modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start
+    ) {
+        OutlinedTextField(
+            value = valueState.value, onValueChange = { valueState.value = it },
+            placeholder = { Text(text = placeholder, style = MaterialTheme.typography.caption) },
+            singleLine = isSingleLine,
+            textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colors.onBackground),
+            enabled = isEnable,
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+            keyboardActions = onAction,
+            shape = RoundedCornerShape(10.dp),
+            readOnly = readOnly,
+            visualTransformation = visualTransformation,
+            trailingIcon = trailingIcon,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = mLightGrayScale,
+                unfocusedBorderColor = mLightGrayScale,
+                focusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Black,
+                placeholderColor = mGrayScale
+            ),
+            modifier = modifier.fillMaxWidth(),
+        )
+        if (useValidation && valueState.value.isEmpty()) {
+            Text(
+                text = "Data tidak boleh kosong",
+                style = MaterialTheme.typography.caption,
+                fontWeight = FontWeight.Normal,
+                color = mRedMain
+            )
+        } else if (useValidation && isEmail) {
+            if (!isValidEmail(valueState.value)) {
+                Text(
+                    text = "Email tidak valid",
+                    style = MaterialTheme.typography.caption,
+                    fontWeight = FontWeight.Normal,
+                    color = mRedMain
+                )
+            }
+        }
+    }
+
+
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -142,6 +169,7 @@ fun CustomBottomSheet(
     isEnable: Boolean,
     textFieldTitle: String,
     onClick: () -> Unit,
+    title: String = "Masukan Data",
     body: @Composable @UiComposable () -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -156,7 +184,7 @@ fun CustomBottomSheet(
         ) {
             // TITLE
             Text(
-                text = "Masukan Data",
+                text = title,
                 style = MaterialTheme.typography.body1,
                 fontWeight = FontWeight.SemiBold,
                 color = mBlack
@@ -209,8 +237,7 @@ fun CustomLoadingOverlay() {
                 .background(color = Color.Transparent)
         ) {
             Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
+                contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()
             ) {
                 CircularProgressIndicator(color = mRedMain)
             }

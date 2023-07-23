@@ -7,6 +7,10 @@ data class KonsumsiMakananResponse(
     val kalori: String,
     val makanan: String,
     val porsi: String,
+    val kadar_glukosa: String,
+    val kadar_karbohidrat: String,
+    val kadar_protein: String,
+    val kandungan_gizi_lainnya: String,
     val updated_at: String,
     val user_id: Int
 )

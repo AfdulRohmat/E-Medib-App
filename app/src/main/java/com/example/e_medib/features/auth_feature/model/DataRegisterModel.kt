@@ -5,7 +5,6 @@ data class DataRegisterModel(
     val username: String,
     val nik: String,
     val email: String,
-    val tanggal_lahir: String,
     val jenis_kelamin: String,
     val usia: String,
     val tinggi_badan: String,

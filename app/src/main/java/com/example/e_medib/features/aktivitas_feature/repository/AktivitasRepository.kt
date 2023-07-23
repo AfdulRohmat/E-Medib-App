@@ -28,7 +28,7 @@ class AktivitasRepository @Inject constructor(private val eMedibApi: EMedibApi) 
 
     // ============ AKTIVITAS PENGGUNA
     suspend fun getAllAktivitasPengguna(
-        headers: Map<String, String>, tingkatAktivitas: String, tanggal: String
+        headers: Map<String, String>, tingkatAktivitas: String = "", tanggal: String
     ): Resource<GetAllAktivitasPenggunaResponse> {
         Resource.Loading(data = true)
         return try {

@@ -37,8 +37,20 @@ fun NavigationGraph(navController: NavHostController) {
             LoginScreen(navController = navController)
         }
 
-        composable(AppScreen.RegisterScreen.screen_route) {
-            RegisterScreen(navController = navController)
+
+        val registerScreenRoute = AppScreen.RegisterScreen.screen_route
+        composable(
+            "$registerScreenRoute/{isEditProfile}", arguments = listOf(
+                navArgument(name = "isEditProfile", builder = {
+                    type = NavType.BoolType
+                })
+            )
+        ) { navBackStackEntry ->
+            navBackStackEntry.arguments?.getBoolean("isEditProfile").let { isEditProfile ->
+                if (isEditProfile != null) {
+                    RegisterScreen(navController = navController, isEditProfile = isEditProfile)
+                }
+            }
         }
 
         composable(AppScreen.PilihKategoriAktivitasScreen.screen_route) {

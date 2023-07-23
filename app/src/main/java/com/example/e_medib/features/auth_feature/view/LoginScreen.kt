@@ -136,11 +136,11 @@ fun LoginScreenComponent(
 
         // button
         Button(
-
             onClick = {
                 onDone(username.value.trim(), password.value.trim())
                 keyboardController?.hide()
                 val loginData = LoginModel(username = username.value, password = password.value)
+
                 authViewModel.doLogin(loginData, context = mContext, navigate = {
                     navController.navigate(AppScreen.Beranda.screen_route)
                 })
@@ -180,7 +180,7 @@ fun LoginScreenComponent(
                 color = mBlack
             )
             TextButton(onClick = {
-                navController.navigate(AppScreen.RegisterScreen.screen_route)
+                navController.navigate(AppScreen.RegisterScreen.screen_route + "/${false}")
             }) {
                 Text(
                     text = "Daftar",

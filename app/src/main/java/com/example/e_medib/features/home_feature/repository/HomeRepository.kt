@@ -1,5 +1,6 @@
 package com.example.e_medib.features.home_feature.repository
 
+import android.graphics.Bitmap
 import android.util.Log
 import com.example.e_medib.data.Resource
 import com.example.e_medib.features.home_feature.model.catatan.DataCatatanModel
@@ -7,7 +8,6 @@ import com.example.e_medib.features.home_feature.model.catatan.response.CatatanR
 import com.example.e_medib.features.home_feature.model.catatan.response.GetAllCatatanRespone
 import com.example.e_medib.features.home_feature.model.diary.DataDiaryModel
 import com.example.e_medib.features.home_feature.model.diary.response.DiaryResponse
-import com.example.e_medib.features.home_feature.model.diary.response.GetAllDiaryResponse
 import com.example.e_medib.features.home_feature.model.gulaDarah.DataGulaDarahModel
 import com.example.e_medib.features.home_feature.model.gulaDarah.getAll.GetAllGulaDarahResponse
 import com.example.e_medib.features.home_feature.model.gulaDarah.hitung.HitungGulDarahResponse
@@ -21,15 +21,16 @@ import com.example.e_medib.features.home_feature.model.tekananDarah.DataTekananD
 import com.example.e_medib.features.home_feature.model.tekananDarah.getAll.GetAllTekananDarahResponse
 import com.example.e_medib.features.home_feature.model.tekananDarah.hitung.HitungTekananDarahResponse
 import com.example.e_medib.features.home_feature.model.userData.DataUserModelResponse
-import com.example.e_medib.features.home_feature.roomDatabase.RekapDatabaseDao
-import com.example.e_medib.features.home_feature.roomDatabase.RekapModelEntity
 import com.example.e_medib.network.EMedibApi
-import kotlinx.coroutines.flow.Flow
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 class HomeRepository @Inject constructor(
     private val eMedibApi: EMedibApi,
-    private val rekapDatabaseDao: RekapDatabaseDao
 ) {
 
     // GET DATA USER
@@ -179,11 +180,25 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun tambahCatatan(
-        data: DataCatatanModel, headers: Map<String, String>
+        data: DataCatatanModel, gambarLukaFile: Bitmap, headers: Map<String, String>
     ): Resource<CatatanResponse> {
+        val bos = ByteArrayOutputStream()
+        gambarLukaFile.compress(Bitmap.CompressFormat.JPEG, 80 /*ignored for PNG*/, bos)
+        val bitmapdata = bos.toByteArray()
+        val name: RequestBody =
+            bitmapdata.toRequestBody("image/*".toMediaTypeOrNull(), 0, bitmapdata.size)
+
         Resource.Loading(data = true)
         return try {
-            val response = eMedibApi.tambahCatatan(data, headers)
+            val response = eMedibApi.tambahCatatan(
+                jenis_luka = data.jenis_luka,
+                catatan_luka = data.catatan_luka,
+                catatan = data.catatan,
+                MultipartBody.Part.createFormData(
+                    "gambar_luka_file", "gambarLukaFile.jpg", name
+                ),
+                headers
+            )
             Resource.Success(data = response)
         } catch (e: Exception) {
             Log.d("Error", "${e}")
@@ -193,29 +208,16 @@ class HomeRepository @Inject constructor(
         }
     }
 
-    // ============== DIARY REKAP ROOM
-    // create Rekap Room
-    suspend fun addRekapRoom(rekapModelEntity: RekapModelEntity) =
-        rekapDatabaseDao.insertRekap(rekapModelEntity)
-
-    // get Rekap All
-    fun getAllRekapRoom(): Flow<List<RekapModelEntity>> =
-        rekapDatabaseDao.getAllRekap()
-
-    // get Rekap by id
-    suspend fun getRekapRoomById(id: String) = rekapDatabaseDao.getRekapById(id)
-
-    //update Rekap
-    suspend fun updateRekapRoom(rekapModelEntity: RekapModelEntity) =
-        rekapDatabaseDao.updateRekap(rekapModelEntity)
-
-    // DIARY REKAP API
+    // TAMBAH REKAP
     suspend fun tambahDiaryRekap(
         data: DataDiaryModel, headers: Map<String, String>
     ): Resource<DiaryResponse> {
         Resource.Loading(data = true)
         return try {
-            val response = eMedibApi.tambahDiaryRekap(data, headers)
+            val response = eMedibApi.tambahDiaryRekap(
+                data,
+                headers
+            )
             Resource.Success(data = response)
         } catch (e: Exception) {
             Log.d("Error", "${e}")
@@ -224,4 +226,6 @@ class HomeRepository @Inject constructor(
             Resource.Loading(data = false)
         }
     }
+
+
 }

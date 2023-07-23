@@ -1,13 +1,16 @@
 package com.example.e_medib.features.aktivitas_feature.view
 
 
+import CustomExpandedCard
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
@@ -15,23 +18,42 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.e_medib.features.aktivitas_feature.view_model.AktivitasViewModel
 import com.example.e_medib.navigations.AppScreen
 import com.example.e_medib.ui.theme.*
+import com.example.e_medib.utils.CustomDataStore
 import java.util.*
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PilihKategoryAktivitasScreen(navController: NavController) {
+fun PilihKategoryAktivitasScreen(
+    navController: NavController,
+    aktivitasViewModel: AktivitasViewModel = hiltViewModel(),
+) {
+    val context = LocalContext.current
+    val store = CustomDataStore(context)
+    val tokenText = store.getAccessToken.collectAsState(initial = "")
+
+    LaunchedEffect(Unit, block = {
+        val headerMap = mutableMapOf<String, String>()
+        headerMap["Accept"] = "application/json"
+        headerMap["Authorization"] = "Bearer ${tokenText.value}"
+        aktivitasViewModel.getDataAktivitasPengguna(headerMap)
+    })
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -51,8 +73,9 @@ fun PilihKategoryAktivitasScreen(navController: NavController) {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 60.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -84,6 +107,75 @@ fun PilihKategoryAktivitasScreen(navController: NavController) {
                 },
             )
 
+            // TOTAL MENIT DAN KALORI AKTIVITAS
+            CustomExpandedCard(
+                modifier = Modifier.padding(top = 16.dp),
+                isExpanded = false,
+                header = {
+                    Column() {
+                        // TOTAL DURASI
+                        Text(
+                            text = "Total Durasi :",
+                            style = MaterialTheme.typography.body1,
+                            fontWeight = FontWeight.Bold,
+                            color = mBlack
+                        )
+                        Text(
+                            text = "${aktivitasViewModel.dataTotalKaloridanDurasi?.total_menit} Menit",
+                            style = MaterialTheme.typography.body1,
+                            fontWeight = FontWeight.SemiBold,
+                            color = mRedMain
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // TOTAL KALORI
+                        Text(
+                            text = "Total Kalori :",
+                            style = MaterialTheme.typography.body1,
+                            fontWeight = FontWeight.Bold,
+                            color = mBlack
+                        )
+                        Text(
+                            text = "${aktivitasViewModel.dataTotalKaloridanDurasi?.total_kalori} Cal",
+                            style = MaterialTheme.typography.body1,
+                            fontWeight = FontWeight.SemiBold,
+                            color = mRedMain
+                        )
+
+                        Button(
+                            onClick = {
+                                aktivitasViewModel.dataTotalKaloridanDurasi?.total_kalori?.let { it1 ->
+                                    aktivitasViewModel.addKaloriAktivitasToDiary(
+                                        it1,
+                                        context
+                                    )
+                                }
+                            },
+                            modifier = Modifier
+                                .padding(top = 24.dp)
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = mRedMain,
+                                contentColor = mWhite,
+                                disabledBackgroundColor = mLightGrayScale,
+                                disabledContentColor = mBlack
+                            ),
+                            shape = RoundedCornerShape(32.dp),
+                        ) {
+                            Text(
+                                text = "Tambah ke Diary",
+                                style = MaterialTheme.typography.body1,
+                                fontWeight = FontWeight.SemiBold,
+                                color = mWhite
+                            )
+                        }
+                    }
+                },
+                body = {},
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
 
         }
 

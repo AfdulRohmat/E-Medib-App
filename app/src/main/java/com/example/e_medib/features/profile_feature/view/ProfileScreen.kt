@@ -94,6 +94,7 @@ fun ProfileScreen(
             // BUTTON EDIT
             OutlinedButton(
                 onClick = {
+                    navController.navigate(AppScreen.RegisterScreen.screen_route + "/${true}")
                 },
                 modifier = Modifier
                     .padding(vertical = 16.dp)

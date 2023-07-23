@@ -44,6 +44,7 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
                         // SAVE TOKEN TO LOCAL STORAGE
                         CoroutineScope(Dispatchers.IO).launch {
                             response.data?.access_token?.let { localStorage.saveToken(it.token) }
+                            localStorage.deleteTempDataDiary()
                         }
                         delay(500L)
                         navigate()
@@ -96,6 +97,49 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
                     }
                     else -> {
                         Log.d("Register", "${response}")
+                    }
+                }
+
+            } catch (e: Exception) {
+                Log.d("Register Error", "$e")
+
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    // UPDATE USER
+    fun updateProfile(
+        headers: Map<String, String>,
+        data: DataRegisterModel,
+        context: Context,
+        navigate: () -> Unit
+    ) {
+        viewModelScope.launch {
+            isLoading = true
+
+            try {
+                when (val response = authRepository.updateProfile(headers, data)) {
+                    is Resource.Success -> {
+                        Toast.makeText(
+                            context, "Berhasil memperbarui data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        delay(1000L)
+                        navigate()
+                    }
+                    is Resource.Error -> {
+                        Log.d("updateProfile", "${response.data}")
+                        Toast.makeText(
+                            context, "gagal Memperbarui data, coba lagi",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    }
+                    else -> {
+                        Log.d("updateProfile", "${response}")
                     }
                 }
 

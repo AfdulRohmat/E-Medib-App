@@ -1,10 +1,8 @@
 package com.example.e_medib.features.profile_feature.view
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -47,16 +45,24 @@ fun CustomProfileCard(
 }
 
 @Composable
-fun CustomProfileListTile(modifier: Modifier = Modifier, data: String, onClick: () -> Unit) {
+fun CustomProfileListTile(
+    modifier: Modifier = Modifier,
+    data: String,
+    onClick: () -> Unit,
+    onDownload: () -> Unit
+) {
     Row(
         modifier = Modifier
             .padding(vertical = 4.dp)
+            .clickable {
+                onClick()
+            }
             .fillMaxWidth()
             .border(
                 BorderStroke(1.dp, mLightGrayScale),
                 RoundedCornerShape(50)
             )
-            .padding(horizontal = 18.dp),
+            .padding(horizontal = 24.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -69,7 +75,7 @@ fun CustomProfileListTile(modifier: Modifier = Modifier, data: String, onClick: 
             color = mBlack
         )
 
-        IconButton(onClick = onClick) {
+        IconButton(onClick = onDownload) {
             Icon(
                 imageVector = Icons.Outlined.FileDownload,
                 contentDescription = "Download",

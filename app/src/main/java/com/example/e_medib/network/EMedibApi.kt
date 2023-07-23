@@ -38,6 +38,8 @@ import com.example.e_medib.features.profile_feature.model.bmrModel.BMRResponse
 import com.example.e_medib.features.profile_feature.model.bmrModel.DataBMRModel
 import com.example.e_medib.features.profile_feature.model.bmrModel.GetAllBMRResponse
 import com.example.e_medib.features.profile_feature.model.logoutModel.LogoutModelResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.*
 import javax.inject.Singleton
 
@@ -57,6 +59,13 @@ interface EMedibApi {
     // LOGOUT
     @GET("logout")
     suspend fun doLogout(@HeaderMap headers: Map<String, String>): LogoutModelResponse
+
+    // UPDATE USER
+    @PATCH("update-profile")
+    suspend fun updateProfile(
+        @HeaderMap headers: Map<String, String>,
+        @Body data: DataRegisterModel,
+    ): RegisterResponse
 
     // =========================== HOMESCREEN =========================
     // GET DATA USER
@@ -114,9 +123,14 @@ interface EMedibApi {
     ): GetAllCatatanRespone
 
     // TAMBAH CATATAN
+    @Multipart
     @POST("diaries")
     suspend fun tambahCatatan(
-        @Body data: DataCatatanModel, @HeaderMap headers: Map<String, String>
+        @Part("jenis_luka") jenis_luka: String,
+        @Part("catatan_luka") catatan_luka: String,
+        @Part("catatan") catatan: String,
+        @Part gambar_luka_file: MultipartBody.Part,
+        @HeaderMap headers: Map<String, String>
     ): CatatanResponse
 
     // GET CATATAN BY ID
@@ -131,7 +145,7 @@ interface EMedibApi {
         @HeaderMap headers: Map<String, String>
     ): GetAllDiaryResponse
 
-    // CREATE DIARY LAPORAN
+    // CREATE DIARY LAPORAN / REKAP
     @POST("tambah-rekap")
     suspend fun tambahDiaryRekap(
         @Body data: DataDiaryModel, @HeaderMap headers: Map<String, String>
@@ -150,7 +164,7 @@ interface EMedibApi {
     @GET("aktivitas-user")
     suspend fun getAllAktivitasPengguna(
         @HeaderMap headers: Map<String, String>,
-        @Query("tingkat_aktivitas") tingkatAktivitas: String,
+        @Query("tingkat_aktivitas") tingkatAktivitas: String = "",
         @Query("tanggal") tanggal: String,
     ): GetAllAktivitasPenggunaResponse
 

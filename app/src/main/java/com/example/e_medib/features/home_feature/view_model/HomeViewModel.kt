@@ -1,10 +1,10 @@
 package com.example.e_medib.features.home_feature.view_model
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.e_medib.data.Resource
@@ -25,13 +25,11 @@ import com.example.e_medib.features.home_feature.model.tekananDarah.getAll.Tekan
 import com.example.e_medib.features.home_feature.model.tekananDarah.getAll.GetAllTekananDarahResponse
 import com.example.e_medib.features.home_feature.model.userData.DataUserModelResponse
 import com.example.e_medib.features.home_feature.repository.HomeRepository
-import com.example.e_medib.features.home_feature.roomDatabase.RekapModelEntity
+import com.example.e_medib.utils.CustomDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -64,41 +62,10 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
         GetAllCatatanRespone(data = listOf())
     )
 
-    var dataRekapRoom: RekapModelEntity by mutableStateOf(RekapModelEntity())
-
-    private val _rekapRoomList = MutableStateFlow<List<RekapModelEntity>>(emptyList())
-    val noteList = _rekapRoomList.asStateFlow()
-
-    init {
-        getAllRekapRoom()
-    }
-
     fun setHari(hari: String) {
         pilihHari = hari
     }
 
-    // REKAP DATANBASE ROOM
-    private fun getAllRekapRoom() = viewModelScope.launch(Dispatchers.IO) {
-        homeRepository.getAllRekapRoom().distinctUntilChanged().collect { listOfRekap ->
-            if (listOfRekap.isEmpty()) {
-                Log.d("getAllRekapRoom", "Empty List")
-            } else {
-                dataRekapRoom = listOfRekap.first()
-            }
-        }
-    }
-
-    fun addRekapRoom(data: RekapModelEntity) =
-        viewModelScope.launch { homeRepository.addRekapRoom(data) }
-
-    fun updateRekapRoom(data: RekapModelEntity) = viewModelScope.launch {
-        homeRepository.updateRekapRoom(data)
-    }
-
-    fun getRekapRoomById(id: String) = viewModelScope.launch {
-        val data = homeRepository.getRekapRoomById(id)
-//        dataRekapRoom = data
-    }
 
     fun getDataUser(headers: Map<String, String>) {
         viewModelScope.launch {
@@ -200,14 +167,23 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
         }
     }
 
-    fun getTodayGulaDarah(headers: Map<String, String>) {
+    fun getTodayGulaDarah(headers: Map<String, String>, context: Context) {
         viewModelScope.launch {
+            val localStorage = CustomDataStore(context)
             isLoading = true
             try {
                 when (val response =
                     homeRepository.getAllGulaDarah(LocalDate.now().toString(), headers)) {
                     is Resource.Success -> {
                         todayGulaDarah = response.data!!.data.first()
+                        val gulaDarah = todayGulaDarah.gula_darah
+                        val keterangan = todayGulaDarah.keterangan
+                        val status = todayGulaDarah.status
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            localStorage.saveGulaDarah("Kadar: $gulaDarah mg/dL. Keterangan: $keterangan. Status: $status")
+                        }
+
                     }
                     is Resource.Error -> {
                         Log.d("Error", "${response.message}")
@@ -225,7 +201,8 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
     }
 
     fun hitungGulaDarah(
-        data: DataGulaDarahModel, headers: Map<String, String>
+        data: DataGulaDarahModel, headers: Map<String, String>,
+        context: Context
     ) {
         viewModelScope.launch {
             isLoading = true
@@ -233,7 +210,7 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
                 when (val response = homeRepository.hitungGulaDarah(data, headers)) {
                     is Resource.Success -> {
                         getAllGulaDarah(headers)
-                        getTodayGulaDarah(headers)
+                        getTodayGulaDarah(headers, context)
                     }
                     is Resource.Error -> {
                         Log.d("Error", "${response.message}")
@@ -276,14 +253,21 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
         }
     }
 
-    fun getTodayKolesterol(headers: Map<String, String>) {
+    fun getTodayKolesterol(headers: Map<String, String>, context: Context) {
         viewModelScope.launch {
+            val localStorage = CustomDataStore(context)
             isLoading = true
             try {
                 when (val response =
                     homeRepository.getAllKolesterol(LocalDate.now().toString(), headers)) {
                     is Resource.Success -> {
                         todayKolesterol = response.data!!.data.first()
+                        val kolesterol = todayKolesterol.kolesterol
+                        val status = todayKolesterol.status
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            localStorage.saveKolesterol("Kadar: $kolesterol mg/dL. Status: $status")
+                        }
                     }
                     is Resource.Error -> {
                         Log.d("Error", "${response.message}")
@@ -301,7 +285,7 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
     }
 
     fun hitungKolesterol(
-        data: DataKolesterolModel, headers: Map<String, String>
+        data: DataKolesterolModel, headers: Map<String, String>, context: Context
     ) {
         viewModelScope.launch {
             isLoading = true
@@ -309,7 +293,7 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
                 when (val response = homeRepository.hitungKolestertol(data, headers)) {
                     is Resource.Success -> {
                         getAllKolesterol(headers)
-                        getTodayKolesterol(headers)
+                        getTodayKolesterol(headers, context)
                     }
                     is Resource.Error -> {
                         Log.d("Error", "${response.message}")
@@ -404,13 +388,24 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
     }
 
     // CATATAN
-    fun getAllCatatan(headers: Map<String, String>) {
+    fun getAllCatatan(headers: Map<String, String>, context: Context) {
         viewModelScope.launch {
+            val localStorage = CustomDataStore(context)
             isLoading = true
             try {
                 when (val response = homeRepository.getAllCatatan(headers, pilihHari)) {
                     is Resource.Success -> {
                         allCatatanData = response.data!!
+                        val recentCatatanData = response.data.data.first()
+                        val gambarLuka = recentCatatanData.gambar_luka
+                        var catatanLuka = recentCatatanData.catatan_luka
+                        var catatanLainnya = recentCatatanData.catatan
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            localStorage.saveGambarLuka(gambarLuka.toString())
+                            localStorage.saveCatatanLuka(catatanLuka)
+                            localStorage.saveCatatanLainnya(catatanLainnya)
+                        }
                     }
                     is Resource.Error -> {
                         Log.d("allCatatanData", "${response.message}")
@@ -428,61 +423,69 @@ class HomeViewModel @Inject constructor(private val homeRepository: HomeReposito
     }
 
     fun tambahCatatan(
-        data: DataCatatanModel, headers: Map<String, String>, context: Context
+        data: DataCatatanModel,
+        gambarLukaFile: Bitmap,
+        headers: Map<String, String>,
+        context: Context
     ) {
         viewModelScope.launch {
             isLoading = true
             try {
-                when (val response = homeRepository.tambahCatatan(data, headers)) {
+                when (val response = homeRepository.tambahCatatan(data, gambarLukaFile, headers)) {
                     is Resource.Success -> {
                         Toast.makeText(
                             context, "Berhasil membuat catatan", Toast.LENGTH_SHORT
                         ).show()
-                        getAllCatatan(headers)
+                        getAllCatatan(headers, context)
                     }
                     is Resource.Error -> {
-                        Log.d("Error", "${response.message}")
+                        Log.d("Error tambahCatatan", "${response.message}")
                     }
                     else -> {
-                        Log.d("Data", "$response")
+                        Log.d("Data tambahCatatan", "$response")
                     }
                 }
             } catch (e: Exception) {
-                Log.d("Error Catch", "$e")
+                Log.d("Error Catch tambahCatatan", "$e")
             } finally {
                 isLoading = false
             }
         }
     }
 
-
     // DIARY REKAP
     fun tambahDiaryRekap(
-        data: DataDiaryModel, headers: Map<String, String>, context: Context, navigate: () -> Unit
+        data: DataDiaryModel,
+        headers: Map<String, String>,
+        context: Context,
     ) {
         viewModelScope.launch {
+            val localStorage = CustomDataStore(context)
             isLoading = true
             try {
                 when (val response = homeRepository.tambahDiaryRekap(data, headers)) {
                     is Resource.Success -> {
                         Toast.makeText(
-                            context, "Berhasil membuat catatan", Toast.LENGTH_SHORT
+                            context, "Berhasil membuat catatan Laporan", Toast.LENGTH_SHORT
                         ).show()
-                        delay(1000L)
-                        navigate()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            localStorage.deleteTempDataDiary()
+                        }
                     }
                     is Resource.Error -> {
-                        Log.d("Error", "${response.message}")
+                        Log.d("Error tambahDiaryRekap", "${response.message}")
                     }
                     else -> {
-                        Log.d("Data", "$response")
+                        Log.d("Data tambahDiaryRekap", "$response")
                     }
                 }
             } catch (e: Exception) {
-                Log.d("Error Catch", "$e")
+                Log.d("Error Catch tambahDiaryRekap", "$e")
             } finally {
                 isLoading = false
             }
         }
     }
+
+
 }
