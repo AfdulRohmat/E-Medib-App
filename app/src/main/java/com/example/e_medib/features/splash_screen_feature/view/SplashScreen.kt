@@ -1,5 +1,6 @@
 package com.example.e_medib.features.splash_screen_feature.view
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +26,7 @@ import kotlinx.coroutines.delay
 
 
 @Composable
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 fun SplashScreen(navController: NavController) {
     val context = LocalContext.current
     val store = CustomDataStore(context)

@@ -1,5 +1,6 @@
 package com.example.e_medib
 
+import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -53,6 +54,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 fun MainScreenView() {
     val navController = rememberNavController()
     val onBack: () -> Unit = {

@@ -3,6 +3,7 @@ package com.example.e_medib.features.pantau_kalori_feature.view
 import CustomBottomSheet
 import CustomExpandedCard
 import CustomInputField
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -50,6 +51,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PantauKaloriScreen(
     navController: NavController,

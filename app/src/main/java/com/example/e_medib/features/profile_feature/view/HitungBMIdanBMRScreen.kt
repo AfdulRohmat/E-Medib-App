@@ -89,7 +89,7 @@ fun HitungBMIdanBMRScreen(
                     backgroundColor = mRedMain
                 )
             }
-        ) {
+        ) {padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()

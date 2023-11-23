@@ -1,5 +1,6 @@
 package com.example.e_medib.features.auth_feature.view
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -36,6 +37,7 @@ import com.example.e_medib.ui.theme.*
 import kotlinx.coroutines.delay
 
 @Composable
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 fun LoginScreen(navController: NavController) {
     Scaffold {
         LoginScreenComponent(navController, onDone = { username, password ->

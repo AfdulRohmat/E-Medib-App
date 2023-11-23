@@ -82,7 +82,7 @@ fun HomeScreen(
             CircularProgressIndicator(color = mRedMain)
         }
     } else {
-        Scaffold() {
+        Scaffold() {padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()

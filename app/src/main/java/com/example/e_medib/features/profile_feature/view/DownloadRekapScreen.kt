@@ -80,7 +80,7 @@ fun DowwnloadRekapScreen(
                 backgroundColor = mRedMain
             )
         }
-    ) {
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

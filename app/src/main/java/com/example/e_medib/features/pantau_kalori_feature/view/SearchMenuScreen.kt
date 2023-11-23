@@ -72,7 +72,7 @@ fun SearchMenuScreen(navController: NavController) {
             )
         }
 
-    ) {
+    ) {padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

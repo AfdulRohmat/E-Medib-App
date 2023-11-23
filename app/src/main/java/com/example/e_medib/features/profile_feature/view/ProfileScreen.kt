@@ -79,7 +79,7 @@ fun ProfileScreen(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = mRedMain)
             )
         }
-    ) {
+    ) {padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

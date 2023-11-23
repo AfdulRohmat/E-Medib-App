@@ -110,7 +110,7 @@ fun AktivitasPenggunaScreen(
                 backgroundColor = mRedMain
             )
         }
-    ) {
+    ) {padding ->
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
